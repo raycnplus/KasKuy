@@ -1,7 +1,7 @@
 {
-  "name": "bot-otp",
+  "name": "KasKuy Bot",
   "version": "1.0.0",
-  "description": "",
+  "description": "Ini adalah bot WhatsApp yang menggunakan OTP untuk verifikasi pengguna.",
   "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",
