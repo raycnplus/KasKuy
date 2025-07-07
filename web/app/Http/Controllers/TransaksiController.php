@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 class TransaksiController extends Controller
 {
+
     public function index()
     {
         $transactions = Transaction::where('user_id', Auth::id())
@@ -20,24 +21,33 @@ class TransaksiController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'type'        => 'required|in:income,expense',
-            'amount'      => 'required|numeric',
-            'category_id' => 'required|exists:categories,id',
-            'description' => 'nullable|string',
-            'date'        => 'required|date',
-        ]);
+        try {
+            $data = $request->validate([
+                'type'        => 'required|in:Pemasukan,Pengeluaran',
+                'amount'      => 'required|numeric',
+                'category_id' => 'required|exists:categories,id',
+                'description' => 'nullable|string',
+                'date'        => 'required|date',
+            ]);
 
-        $transaksi = Transaction::create([
-            'user_id'     => Auth::id(),
-            'type'        => $data['type'],
-            'amount'      => $data['amount'],
-            'category_id' => $data['category_id'],
-            'description' => $data['description'] ?? null,
-            'date'        => $data['date'],
-        ]);
+            $transaksi = Transaction::create([
+                'user_id'     => Auth::id(),
+                'type'        => $data['type'],
+                'amount'      => $data['amount'],
+                'category_id' => $data['category_id'],
+                'description' => $data['description'] ?? null,
+                'date'        => $data['date'],
+            ]);
 
-        return new TransaksiResource($transaksi);
+            return new TransaksiResource($transaksi);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message'   => $e->getMessage(),
+                'exception' => class_basename($e),
+                'line'      => $e->getLine(),
+                'file'      => $e->getFile(),
+            ], 500);
+        }
     }
 
     public function show(Transaction $transaksi)

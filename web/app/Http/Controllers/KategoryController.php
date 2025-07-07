@@ -43,18 +43,27 @@ class KategoryController extends Controller
 
     public function update(Request $request, Category $category)
     {
-        if ($category->user_id !== Auth::id()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+        try {
+            if ($category->user_id !== Auth::id()) {
+                return response()->json(['message' => 'Unauthorized'], 403);
+            }
+
+            $data = $request->validate([
+                'name' => 'sometimes|required|string|max:255',
+                'type' => 'sometimes|required|in:income,expense',
+            ]);
+
+            $category->update($data);
+
+            return new KategoryResource($category);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message'   => $e->getMessage(),
+                'exception' => class_basename($e),
+                'line'      => $e->getLine(),
+                'file'      => $e->getFile(),
+            ], 500);
         }
-
-        $data = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'type' => 'sometimes|required|in:income,expense',
-        ]);
-
-        $category->update($data);
-
-        return new KategoryResource($category);
     }
 
     public function destroy(Category $category)

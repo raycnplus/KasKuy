@@ -16,15 +16,15 @@ Route::post('/login',    [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-    
-    Route::apiResource('categories', KategoryController::class)->only([
+
+    Route::apiResource('category', KategoryController::class)->only([
         'index',
         'store',
         'update',
         'destroy'
     ]);
 
-    Route::apiResource('transaksi', TransaksiController::class)->only([
+    Route::apiResource('transaction', TransaksiController::class)->only([
         'index',
         'store',
         'show',
