@@ -10,7 +10,10 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::post('/register', [AuthController::class, 'register']);
+// Route::post('/register', [AuthController::class, 'register']);
+Route::post('/register', [AuthController::class, 'sendOtpForRegister'])->middleware('throttle:3,1');
+Route::post('/register/verify', [AuthController::class, 'verifyOtpAndRegister']);
+
 Route::post('/login',    [AuthController::class, 'login']);
 
 
