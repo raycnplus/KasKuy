@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Category extends Model
 {
     protected $fillable = [
-        'user_id', 'name', 'icon'
+        'user_id', 'name', 'icon','type'
     ];
 
     public function user()

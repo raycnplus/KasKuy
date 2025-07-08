@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Resources\TransactionResource;
 use Illuminate\Support\Facades\Auth;
 
-class TransaksiController extends Controller
+class TransactionController extends Controller
 {
 
     public function index()

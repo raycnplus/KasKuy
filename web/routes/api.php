@@ -4,7 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\TransaksiController;
+use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\ReportController;
 
 Route::get('/user', function (Request $request) {
@@ -28,7 +28,7 @@ Route::middleware('auth:sanctum')->group(function () {
         'destroy'
     ]);
 
-    Route::apiResource('transaction', TransaksiController::class)->only([
+    Route::apiResource('transaction', TransactionController::class)->only([
         'index',
         'store',
         'show',
@@ -39,4 +39,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/reports/daily',    [ReportController::class, 'daily']);
     Route::get('/reports/weekly',   [ReportController::class, 'weekly']);
     Route::get('/reports/monthly',  [ReportController::class, 'monthly']);
+    Route::get('/reports/yearly',  [ReportController::class, 'yearly']);
 });

@@ -21,13 +21,15 @@ class CategoryController extends Controller
         try {
             $data = $request->validate([
                 'name' => 'required|string|max:255',
-                'icon' => 'required'
+                'icon' => 'required',
+                'type' => 'required|in:Pemasukan,Pengeluaran',
             ]);
 
             $category = Category::create([
                 'user_id' => Auth::id(),
                 'name'    => $data['name'],
                 'icon'    => $data['icon'],
+                'type'  => $data['type'],
             ]);
 
             return new CategoryResource($category);
