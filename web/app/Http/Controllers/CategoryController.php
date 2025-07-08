@@ -4,16 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
-use App\Http\Resources\KategoryResource;
+use App\Http\Resources\CategoryResource;
 use Illuminate\Support\Facades\Auth;
 
-class KategoryController extends Controller
+class CategoryController extends Controller
 {
     public function index()
     {
         $categories = Category::where('user_id', Auth::id())->get();
 
-        return KategoryResource::collection($categories);
+        return CategoryResource::collection($categories);
     }
 
     public function store(Request $request)
@@ -30,7 +30,7 @@ class KategoryController extends Controller
                 'icon'    => $data['icon'],
             ]);
 
-            return new KategoryResource($category);
+            return new CategoryResource($category);
         } catch (\Throwable $e) {
             return response()->json([
                 'message'   => $e->getMessage(),
@@ -55,7 +55,7 @@ class KategoryController extends Controller
 
             $category->update($data);
 
-            return new KategoryResource($category);
+            return new CategoryResource($category);
         } catch (\Throwable $e) {
             return response()->json([
                 'message'   => $e->getMessage(),

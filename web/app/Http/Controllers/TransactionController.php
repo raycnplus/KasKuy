@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Transaction;
 use Illuminate\Http\Request;
-use App\Http\Resources\TransaksiResource;
+use App\Http\Resources\TransactionResource;
 use Illuminate\Support\Facades\Auth;
 
 class TransaksiController extends Controller
@@ -16,7 +16,7 @@ class TransaksiController extends Controller
             ->latest()
             ->get();
 
-        return TransaksiResource::collection($transactions);
+        return TransactionResource::collection($transactions);
     }
 
     public function store(Request $request)
@@ -39,7 +39,7 @@ class TransaksiController extends Controller
                 'date'        => $data['date'],
             ]);
 
-            return new TransaksiResource($transaksi);
+            return new TransactionResource($transaksi);
         } catch (\Throwable $e) {
             return response()->json([
                 'message'   => $e->getMessage(),
@@ -56,7 +56,7 @@ class TransaksiController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        return new TransaksiResource($transaksi);
+        return new TransactionResource($transaksi);
     }
 
     public function update(Request $request, Transaction $transaksi)
@@ -75,7 +75,7 @@ class TransaksiController extends Controller
 
         $transaksi->update($data);
 
-        return new TransaksiResource($transaksi);
+        return new TransactionResource($transaksi);
     }
 
     public function destroy(Transaction $transaksi)
