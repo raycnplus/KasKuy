@@ -20,8 +20,8 @@ class ReportController extends Controller
                 ->whereDate('date', $today)
                 ->get();
 
-            $income = $transactions->where('type', 'income')->sum('amount');
-            $expense = $transactions->where('type', 'expense')->sum('amount');
+            $income = $transactions->where('type', 'Pemasukan')->sum('amount');
+            $expense = $transactions->where('type', 'Pengeluaran')->sum('amount');
 
             return new ReportResource([
                 'date'          => $today,
@@ -48,11 +48,11 @@ class ReportController extends Controller
                 ->whereBetween('date', [now()->startOfWeek(), now()->endOfWeek()])
                 ->get();
 
-            $income = $transactions->where('type', 'income')->sum('amount');
-            $expense = $transactions->where('type', 'expense')->sum('amount');
+            $income = $transactions->where('type', 'Pemasukan')->sum('amount');
+            $expense = $transactions->where('type', 'Pengeluaran')->sum('amount');
 
             return new ReportResource([
-                'date'          => now()->format('W'), // week number
+                'date'          => now()->format('W'),
                 'total_income'  => $income,
                 'total_expense' => $expense,
                 'transactions'  => $transactions,
@@ -77,8 +77,8 @@ class ReportController extends Controller
                 ->whereMonth('date', now()->month)
                 ->get();
 
-            $income = $transactions->where('type', 'income')->sum('amount');
-            $expense = $transactions->where('type', 'expense')->sum('amount');
+            $income = $transactions->where('type', 'Pemasukan')->sum('amount');
+            $expense = $transactions->where('type', 'Pengeluaran')->sum('amount');
 
             return new ReportResource([
                 'date'          => $month,
@@ -107,8 +107,8 @@ class ReportController extends Controller
                 ->whereYear('date', $year)
                 ->get();
 
-            $income = $transactions->where('type', 'income')->sum('amount');
-            $expense = $transactions->where('type', 'expense')->sum('amount');
+            $income = $transactions->where('type', 'Pemasukan')->sum('amount');
+            $expense = $transactions->where('type', 'Pengeluaran')->sum('amount');
 
             return new ReportResource([
                 'date'          => $year,

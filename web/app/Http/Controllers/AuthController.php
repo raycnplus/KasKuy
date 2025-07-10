@@ -86,8 +86,12 @@ class AuthController extends Controller
         // Login user (pakai Sanctum token misalnya)
         $token = $user->createToken('auth_token')->plainTextToken;
 
+        $user->tokens()->latest()->first()->update([
+            'expires_at' => now()->addMinutes(5)
+        ]);
+
         return response()->json([
-            'message' => 'Registrasi & verifikasi OTP berhasil',
+            'message' => 'Login success',
             'user'    => new UserResource($user),
             'token'   => $token,
         ]);
@@ -105,11 +109,15 @@ class AuthController extends Controller
 
             if (!$user || !Hash::check($credentials['password'], $user->password)) {
                 return response()->json([
-                    'message' => 'Invalid credentials'
+                    'message' => 'Akun Tidak Ditemukan'
                 ], 401);
             }
 
             $token = $user->createToken('auth_token')->plainTextToken;
+
+            $user->tokens()->latest()->first()->update([
+                'expires_at' => now()->addMinutes(5)
+            ]);
 
             return response()->json([
                 'message' => 'Login success',
