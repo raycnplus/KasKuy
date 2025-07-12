@@ -16,12 +16,24 @@ class AuthController extends Controller
 
     public function sendOtpForRegister(Request $request)
     {
-        $data = $request->validate([
-            'name'     => 'required|string|max:255',
-            'username' => 'required|string|max:255',
-            'phone'    => 'required|string|unique:users',
-            'password' => 'required|string|min:6',
-        ]);
+        $data = $request->validate(
+            [
+                'name'     => 'required|string|max:255',
+                'username' => 'required|string|max:255|unique:users,username',
+                'phone'    => 'required|string|unique:users',
+                'password' => 'required|string|min:6',
+            ],
+            [
+                'phone.unique'    => 'Nomor telepon sudah terdaftar',
+                'username.unique' => 'Username sudah digunakan',
+                'name.required'   => 'Nama harus diisi',
+                'username.required' => 'Username harus diisi',
+                'phone.required'  => 'Nomor telepon harus diisi',
+                'password.required' => 'Password harus diisi',
+                'password.min'    => 'Password minimal 6 karakter',
+                'name.max'        => 'Nama maksimal 255 karakter',
+            ]
+        );
 
         // Simpan sementara selama 10 menit
         Cache::put('register_' . $data['phone'], $data, now()->addMinutes(10));
@@ -87,7 +99,7 @@ class AuthController extends Controller
         $token = $user->createToken('auth_token')->plainTextToken;
 
         $user->tokens()->latest()->first()->update([
-            'expires_at' => now()->addMinutes(5)
+            'expires_at' => now()->addMinutes(60)
         ]);
 
         return response()->json([
@@ -116,7 +128,7 @@ class AuthController extends Controller
             $token = $user->createToken('auth_token')->plainTextToken;
 
             $user->tokens()->latest()->first()->update([
-                'expires_at' => now()->addMinutes(5)
+                'expires_at' => now()->addMinutes(60)
             ]);
 
             return response()->json([

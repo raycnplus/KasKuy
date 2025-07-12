@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\FriendshipController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -37,4 +38,11 @@ Route::middleware('auth:sanctum', 'token.expired')->group(function () {
     Route::get('/reports/weekly',   [ReportController::class, 'weekly']);
     Route::get('/reports/monthly',  [ReportController::class, 'monthly']);
     Route::get('/reports/yearly',  [ReportController::class, 'yearly']);
+
+    Route::post('/friend-request', [FriendshipController::class, 'sendRequest']);
+    Route::post('/friend-request/respond', [FriendshipController::class, 'respondRequest']);
+    Route::get('/friend-requests/incoming', [FriendshipController::class, 'incomingRequests']);
+    Route::get('/friends', [FriendshipController::class, 'friends']);
+    Route::delete('/friends/{username}', [FriendshipController::class, 'removeFriend']);
+
 });

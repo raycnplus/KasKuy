@@ -30,7 +30,7 @@ class TransactionController extends Controller
                 'date'        => 'required|date',
             ]);
 
-            $transaksi = Transaction::create([
+            $transaction = Transaction::create([
                 'user_id'     => Auth::id(),
                 'type'        => $data['type'],
                 'amount'      => $data['amount'],
@@ -39,7 +39,7 @@ class TransactionController extends Controller
                 'date'        => $data['date'],
             ]);
 
-            return new TransactionResource($transaksi);
+            return new TransactionResource($transaction);
         } catch (\Throwable $e) {
             return response()->json([
                 'message'   => $e->getMessage(),
@@ -50,18 +50,18 @@ class TransactionController extends Controller
         }
     }
 
-    public function show(Transaction $transaksi)
+    public function show(Transaction $transaction)
     {
-        if (Auth::id() !== $transaksi->user_id) {
+        if (Auth::id() !== $transaction->user_id) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        return new TransactionResource($transaksi);
+        return new TransactionResource($transaction);
     }
 
-    public function update(Request $request, Transaction $transaksi)
+    public function update(Request $request, Transaction $transaction)
     {
-        if ($transaksi->user_id !== Auth::id()) {
+        if ($transaction->user_id !== Auth::id()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -73,18 +73,18 @@ class TransactionController extends Controller
             'date'        => 'sometimes|required|date',
         ]);
 
-        $transaksi->update($data);
+        $transaction->update($data);
 
-        return new TransactionResource($transaksi);
+        return new TransactionResource($transaction);
     }
 
-    public function destroy(Transaction $transaksi)
+    public function destroy(Transaction $transaction)
     {
-        if (Auth::id() !== $transaksi->user_id) {
+        if (Auth::id() !== $transaction->user_id) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        $transaksi->delete();
+        $transaction->delete();
 
         return response()->json(['message' => 'Transaction deleted successfully.']);
     }
