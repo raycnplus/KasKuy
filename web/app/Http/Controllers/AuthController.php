@@ -109,6 +109,48 @@ class AuthController extends Controller
         ]);
     }
 
+    public function resendOtp(Request $request)
+    {
+        $request->validate([
+            'phone' => 'required|string',
+        ]);
+
+        $cachedData = Cache::get('register_' . $request->phone);
+
+        if (!$cachedData) {
+            return response()->json([
+                'message' => 'Data registrasi tidak ditemukan. Silakan daftar ulang.'
+            ], 400);
+        }
+
+        $lastOtp = OtpCode::where('phone', $request->phone)
+            ->latest()
+            ->first();
+
+        if ($lastOtp && $lastOtp->created_at > now()->subMinute()) {
+            return response()->json([
+                'message' => 'Tunggu sebentar sebelum meminta OTP lagi.'
+            ], 429);
+        }
+
+        $otp = rand(100000, 999999);
+
+        OtpCode::create([
+            'phone' => $request->phone,
+            'code' => $otp,
+            'expires_at' => now()->addMinutes(5),
+        ]);
+
+        Http::post('http://localhost:5000/api/send-otp', [
+            'phone' => $request->phone,
+            'message' => "Kode OTP Anda untuk registrasi (ulang): $otp"
+        ]);
+
+        return response()->json([
+            'message' => 'Kode OTP baru berhasil dikirim ke WhatsApp.'
+        ]);
+    }
+
     public function login(Request $request)
     {
         try {

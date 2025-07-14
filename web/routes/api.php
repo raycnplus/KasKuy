@@ -13,6 +13,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::post('/register', [AuthController::class, 'sendOtpForRegister'])->middleware('throttle:3,1');
+Route::post('/resend-otp', [AuthController::class, 'resendOtp']);
 Route::post('/register/verify', [AuthController::class, 'verifyOtpAndRegister']);
 Route::post('/login',    [AuthController::class, 'login']);
 
