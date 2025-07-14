@@ -7,6 +7,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\FriendshipController;
+use App\Http\Controllers\SearchController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -46,4 +47,6 @@ Route::middleware('auth:sanctum', 'token.expired')->group(function () {
     Route::get('/friends', [FriendshipController::class, 'friends']);
     Route::delete('/friends/{username}', [FriendshipController::class, 'removeFriend']);
 
+    Route::get('/friends/search', [SearchController::class, 'searchFriends']);
+    Route::get('/search', [SearchController::class, 'searchUser']);
 });
