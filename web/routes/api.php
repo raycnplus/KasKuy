@@ -17,9 +17,12 @@ Route::post('/register', [AuthController::class, 'sendOtpForRegister'])->middlew
 Route::post('/resend-otp', [AuthController::class, 'resendOtp']);
 Route::post('/register/verify', [AuthController::class, 'verifyOtpAndRegister']);
 Route::post('/login',    [AuthController::class, 'login']);
+Route::post('/forgot-pw/request', [AuthController::class, 'requestResetOtp']);
+Route::post('/forgot-pw/verify', [AuthController::class, 'verifyResetOtp']);
 
 Route::middleware('auth:sanctum', 'token.expired')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/change-password', [AuthController::class, 'changePassword']);
 
     Route::apiResource('category', CategoryController::class)->only([
         'index',
