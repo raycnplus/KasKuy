@@ -8,6 +8,10 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\FriendshipController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\SplitBillController;
+use App\Http\Controllers\SplitBillItemController;
+use App\Http\Controllers\SplitBillParticipantController;
+use App\Http\Controllers\SplitBillAssignmentController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -52,4 +56,10 @@ Route::middleware('auth:sanctum', 'token.expired')->group(function () {
 
     Route::get('/friends/search', [SearchController::class, 'searchFriends']);
     Route::get('/search', [SearchController::class, 'searchUser']);
+
+    Route::post('/split-bills', [SplitBillController::class, 'store']);
+    Route::get('/split-bills/{id}/summary', [SplitBillController::class, 'summary']);
+    Route::post('/split-bills/{id}/items', [SplitBillItemController::class, 'store']);
+    Route::post('/split-bills/{id}/participants', [SplitBillParticipantController::class, 'store']);
+    Route::post('/split-bills/items/{itemId}/assign', [SplitBillAssignmentController::class, 'assign']);
 });

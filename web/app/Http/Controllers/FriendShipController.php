@@ -129,27 +129,36 @@ class FriendShipController extends Controller
 
     public function removeFriend($username)
     {
-        $authUser = Auth::user();
-        $targetUser = User::where('username', $username)->first();
+        try {
+            $authUser = Auth::user();
+            $targetUser = User::where('username', $username)->first();
 
-        if (!$targetUser) {
-            return response()->json(['message' => 'User not found.'], 404);
+            if (!$targetUser) {
+                return response()->json(['message' => 'User not found.'], 404);
+            }
+
+            $friendship = Friendship::where(function ($query) use ($authUser, $targetUser) {
+                $query->where('user_id', $authUser->id)
+                    ->where('friend_id', $targetUser->id);
+            })->orWhere(function ($query) use ($authUser, $targetUser) {
+                $query->where('user_id', $targetUser->id)
+                    ->where('friend_id', $authUser->id);
+            })->first();
+
+            if (!$friendship) {
+                return response()->json(['message' => 'Friendship not found.'], 404);
+            }
+
+            $friendship->delete();
+
+            return response()->json(['message' => 'Friendship removed successfully.']);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message'   => $e->getMessage(),
+                'exception' => class_basename($e),
+                'line'      => $e->getLine(),
+                'file'      => $e->getFile(),
+            ], 500);
         }
-
-        $friendship = Friendship::where(function ($query) use ($authUser, $targetUser) {
-            $query->where('user_id', $authUser->id)
-                ->where('friend_id', $targetUser->id);
-        })->orWhere(function ($query) use ($authUser, $targetUser) {
-            $query->where('user_id', $targetUser->id)
-                ->where('friend_id', $authUser->id);
-        })->first();
-
-        if (!$friendship) {
-            return response()->json(['message' => 'Friendship not found.'], 404);
-        }
-
-        $friendship->delete();
-
-        return response()->json(['message' => 'Friendship removed successfully.']);
     }
 }

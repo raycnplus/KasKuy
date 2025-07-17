@@ -66,7 +66,7 @@ class TransactionController extends Controller
         }
 
         $data = $request->validate([
-            'type'        => 'sometimes|required|in:income,expense',
+            'type'        => 'sometimes|required|in:Pemasukan,Pengeluaran',
             'amount'      => 'sometimes|required|numeric',
             'category_id' => 'sometimes|required|exists:categories,id',
             'description' => 'nullable|string',

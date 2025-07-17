@@ -199,79 +199,105 @@ class AuthController extends Controller
 
     public function changePassword(Request $request)
     {
-        $request->validate([
-            'current_password'      => 'required|string',
-            'new_password'          => 'required|string|min:6|confirmed',
-        ], [
-            'current_password.required' => 'Password saat ini harus diisi',
-            'new_password.required'     => 'Password baru harus diisi',
-            'new_password.min'          => 'Password baru minimal 6 karakter',
-            'new_password.confirmed'    => 'Konfirmasi password tidak cocok',
-        ]);
+        try {
+            $request->validate([
+                'current_password'      => 'required|string',
+                'new_password'          => 'required|string|min:6|confirmed',
+            ], [
+                'current_password.required' => 'Password saat ini harus diisi',
+                'new_password.required'     => 'Password baru harus diisi',
+                'new_password.min'          => 'Password baru minimal 6 karakter',
+                'new_password.confirmed'    => 'Konfirmasi password tidak cocok',
+            ]);
+            $user = $request->user();
 
-        $user = $request->user();
+            if (!Hash::check($request->current_password, $user->password)) {
+                return response()->json([
+                    'message' => 'Password saat ini salah'
+                ], 422);
+            }
 
-        if (!Hash::check($request->current_password, $user->password)) {
+            $user->update([
+                'password' => bcrypt($request->new_password),
+            ]);
+
             return response()->json([
-                'message' => 'Password saat ini salah'
-            ], 422);
+                'message' => 'Password berhasil diubah'
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message'   => $e->getMessage(),
+                'exception' => class_basename($e),
+                'line'      => $e->getLine(),
+                'file'      => $e->getFile(),
+            ], 500);
         }
-
-        $user->update([
-            'password' => bcrypt($request->new_password),
-        ]);
-
-        return response()->json([
-            'message' => 'Password berhasil diubah'
-        ]);
     }
 
     public function requestResetOtp(Request $request)
     {
-        $data = $request->validate([
-            'phone' => 'required|string|exists:users,phone',
-        ]);
+        try {
+            $data = $request->validate([
+                'phone' => 'required|string|exists:users,phone',
+            ]);
 
-        $otp = rand(100000, 999999);
+            $otp = rand(100000, 999999);
 
-        OtpCode::create([
-            'phone' => $data['phone'],
-            'code' => $otp,
-            'expires_at' => now()->addMinutes(5),
-        ]);
- 
-        Http::post('http://localhost:5000/api/send-otp', [
-            'phone' => $data['phone'],
-            'message' => "OTP lupa password: $otp"
-        ]);
+            OtpCode::create([
+                'phone' => $data['phone'],
+                'code' => $otp,
+                'expires_at' => now()->addMinutes(5),
+            ]);
 
-        return response()->json(['message' => 'OTP dikirim.']);
+            Http::post('http://localhost:5000/api/send-otp', [
+                'phone' => $data['phone'],
+                'message' => "OTP lupa password: $otp"
+            ]);
+
+            return response()->json(['message' => 'OTP dikirim.']);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message'   => $e->getMessage(),
+                'exception' => class_basename($e),
+                'line'      => $e->getLine(),
+                'file'      => $e->getFile(),
+            ], 500);
+        }
     }
 
     public function verifyResetOtp(Request $request)
     {
-        $request->validate([
-            'phone' => 'required|string',
-            'otp'   => 'required|string',
-            'password' => 'required|string|min:6|confirmed',
-        ]);
+        try {
+            $request->validate([
+                'phone' => 'required|string',
+                'otp'   => 'required|string',
+                'password' => 'required|string|min:6|confirmed',
+            ]);
 
-        $otp = OtpCode::where('phone', $request->phone)
-            ->where('code', $request->otp)
-            ->where('is_used', false)
-            ->where('expires_at', '>', now())
-            ->first();
+            $otp = OtpCode::where('phone', $request->phone)
+                ->where('code', $request->otp)
+                ->where('is_used', false)
+                ->where('expires_at', '>', now())
+                ->first();
 
-        if (!$otp) {
-            return response()->json(['message' => 'OTP salah atau kadaluarsa'], 400);
+            if (!$otp) {
+                return response()->json(['message' => 'OTP salah atau kadaluarsa'], 400);
+            }
+
+            $user = User::where('phone', $request->phone)->first();
+            $user->password = bcrypt($request->password);
+            $user->save();
+
+            $otp->update(['is_used' => true]);
+
+            return response()->json(['message' => 'Password berhasil direset']);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message'   => $e->getMessage(),
+                'exception' => class_basename($e),
+                'line'      => $e->getLine(),
+                'file'      => $e->getFile(),
+            ], 500);
         }
-
-        $user = User::where('phone', $request->phone)->first();
-        $user->password = bcrypt($request->password);
-        $user->save();
-
-        $otp->update(['is_used' => true]);
-
-        return response()->json(['message' => 'Password berhasil direset']);
     }
 }
