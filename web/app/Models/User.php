@@ -53,4 +53,26 @@ class User extends Authenticatable
     {
         return $this->hasMany(Transaction::class);
     }
+
+    public function friends()
+    {
+        return $this->belongsToMany(User::class, 'friendships', 'user_id', 'friend_id')
+            ->withPivot('status')
+            ->wherePivot('status', 'accepted');
+    }
+
+    public function friendRequests()
+    {
+        return $this->hasMany(Friendship::class, 'friend_id')->where('status', 'pending');
+    }
+
+    public function splitBillsCreated()
+    {
+        return $this->hasMany(SplitBill::class, 'created_by');
+    }
+
+    public function splitBillParticipations()
+    {
+        return $this->hasMany(SplitBillParticipant::class);
+    }
 }
