@@ -52,7 +52,8 @@ class CategoryController extends Controller
 
             $data = $request->validate([
                 'name' => 'sometimes|required|string|max:255',
-                'type' => 'sometimes|required|in:income,expense',
+                'type' => 'sometimes|required|in:Pemasukan,Pengeluaran',
+                'icon' => 'sometimes|required',
             ]);
 
             $category->update($data);
