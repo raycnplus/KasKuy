@@ -1,5 +1,6 @@
 import pkg from 'whatsapp-web.js';
 import qrcode from 'qrcode-terminal';
+import axios from 'axios';
 
 const { Client, LocalAuth } = pkg;
 
@@ -26,6 +27,22 @@ client.on('authenticated', () => {
 
 client.on('auth_failure', msg => {
     console.error('❌ Gagal login:', msg);
+});
+
+client.on('message', async msg => {
+  const { from, body } = msg;
+ 
+  try {
+
+    await axios.post('https://n8n.jcode.my.id/webhook/kaskuy', {
+      chatId: from,
+      body: body,
+      timestamp: msg.timestamp
+    });
+
+  } catch (err) {
+    console.error('❌ Gagal kirim ke n8n webhook:', err.message);
+  }
 });
 
 client.initialize();
