@@ -13,6 +13,7 @@ import Tablet from "../components/Tablet.jsx";
 import Tabletnomove from "../components/Tabletnomove.jsx";
 import Navbar from "../components/lainnya/Navbar.jsx";
 import Footer from "../components/lainnya/Footer.jsx";
+import AccordionFAQ from "../components/lainnya/AccordionFAQ.jsx";
 const sampleFeedbacks = [
     {
         id: 1,
@@ -96,7 +97,38 @@ const sampleFeedbacks = [
     },
 ];
 
-export default function Landing() {
+const faqItems = [
+  {
+    question: "Bagaimana cara mendaftar di Kaskuy?",
+    answer: "Untuk mendaftar di Kaskuy, klik tombol 'Daftar' di halaman utama, lalu lengkapi formulir dengan nama lengkap, nomor telepon, dan kata sandi. Setelah akun aktif, Anda bisa langsung mulai mencatat pemasukan dan pengeluaran, atau membuat kategori anggaran sesuai kebutuhan."
+  },
+  {
+    question: "Apakah Kaskuy bisa diakses melalui perangkat mobile?",
+    answer: "Ya, Kaskuy dirancang responsif dan kompatibel dengan smartphone serta tablet berbasis Android dan iOS. Anda bisa mengakses aplikasi melalui browser atau menggunakan aplikasi mobile (jika tersedia) untuk memantau transaksi, mengelola anggaran, atau melihat laporan keuangan kapan saja."
+  },
+  {
+    question: "Apa manfaat menggunakan Kaskuy bagi pengelolaan keuangan?",
+    answer: "Kaskuy membantu Anda mencatat transaksi secara real-time, mengelola anggaran bulanan, dan menganalisis pola pengeluaran. Fitur laporan bulanan dan notifikasi pengeluaran berlebihan memudahkan pengendalian keuangan pribadi atau kelompok secara efektif."
+  },
+  {
+    question: "Bagaimana jika saya ingin mengubah kategori transaksi atau anggaran?",
+    answer: "Anda dapat mengedit kategori transaksi atau anggaran langsung di menu 'Pengaturan'. Semua perubahan akan tercatat secara otomatis, dan riwayat transaksi lama tetap tersimpan untuk referensi analisis keuangan."
+  },
+  {
+    question: "Bagaimana Kaskuy memastikan keamanan data keuangan pengguna?",
+    answer: "Kaskuy menggunakan enkripsi SSL/TLS untuk melindungi data transaksi dan autentikasi dua faktor (2FA) untuk keamanan akun. Data disimpan di server terpusat dengan cadangan berkala, serta akses terbatas hanya untuk pengguna terotorisasi."
+  }
+];
+
+const LandingPage = () => {
+  const featuresRef = useRef(null);
+
+  const scrollToFeatures = () => {
+    if (featuresRef.current) {
+      featuresRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
     return (
         <div className="w-screen min-h-screen bg-gradient-to-br from-pink-50 to-pink-100 text-pink-500/80 relative overflow-hidden">
             {/* Background decorations */}
@@ -154,7 +186,7 @@ export default function Landing() {
                             className="space-y-2 text-center lg:text-left"
                             id="join"
                         >
-                            <LPJoin />
+                            <LPJoin onLearnMoreClick={scrollToFeatures}/>
                             <p className="text-xs sm:text-sm">
                                 ⭐⭐⭐⭐⭐ 4.5/5 Di PlayStore
                             </p>
@@ -182,7 +214,7 @@ export default function Landing() {
                 </div>
 
                 {/* Feature section */}
-                <div className="mt-12 sm:mt-16 lg:mt-20">
+                <div className="mt-12 sm:mt-16 lg:mt-20" ref={featuresRef} id="features">
                     <div className="w-full bg-white/70 backdrop-blur-lg rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-10">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-center">
                             <div className="order-2 lg:order-1 flex justify-center">
@@ -269,11 +301,15 @@ export default function Landing() {
                     />
                 </div>
             </div>
-            <div className="relative z-10 px-4 sm:px-6">
-
+            <div className="relative z-10 px-4 sm:px-6 mb-12">
+                <h1 className="text-center text-3xl sm:text-4xl font-semibold text-pink-600 mb-6">
+                    Frequently Asked Questions
+                    </h1>
+                <AccordionFAQ items={faqItems} />
             </div>
             <Footer />
         </div>
-
     );
 }
+
+export default LandingPage

@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>React in Laravel</title>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('img/logo/K.png') }}"/>
+    <title>Kaskuy</title>
     @viteReactRefresh
     @vite(['resources/css/app.css', 'resources/js/app.jsx'])
     <style>
