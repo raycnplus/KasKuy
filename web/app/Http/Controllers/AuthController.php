@@ -16,6 +16,10 @@ class AuthController extends Controller
 
     public function sendOtpForRegister(Request $request)
     {
+        $request->merge([
+            'username' => strtolower($request->username)
+        ]);
+
         $data = $request->validate(
             [
                 'name'     => 'required|string|max:255',
@@ -24,21 +28,21 @@ class AuthController extends Controller
                 'password' => 'required|string|min:6',
             ],
             [
-                'phone.unique'    => 'Nomor telepon sudah terdaftar',
-                'username.unique' => 'Username sudah digunakan',
-                'name.required'   => 'Nama harus diisi',
+                'phone.unique'      => 'Nomor telepon sudah terdaftar',
+                'username.unique'   => 'Username sudah digunakan',
+                'name.required'     => 'Nama harus diisi',
                 'username.required' => 'Username harus diisi',
-                'phone.required'  => 'Nomor telepon harus diisi',
+                'phone.required'    => 'Nomor telepon harus diisi',
                 'password.required' => 'Password harus diisi',
-                'password.min'    => 'Password minimal 6 karakter',
-                'name.max'        => 'Nama maksimal 255 karakter',
+                'password.min'      => 'Password minimal 6 karakter',
+                'name.max'          => 'Nama maksimal 255 karakter',
             ]
         );
 
-        // Simpan sementara selama 10 menit
+        // Cache data untuk verifikasi selanjutnya
         Cache::put('register_' . $data['phone'], $data, now()->addMinutes(10));
 
-        // Kirim OTP seperti biasa
+        // Kirim OTP
         $otp = rand(100000, 999999);
         OtpCode::create([
             'phone' => $data['phone'],
@@ -85,10 +89,11 @@ class AuthController extends Controller
             ], 400);
         }
 
-        // Buat user
+        $username = strtolower($data['username']);
+
         $user = User::create([
             'name'     => $data['name'],
-            'username' => $data['username'],
+            'username' => $username,
             'phone'    => $data['phone'],
             'password' => bcrypt($data['password']),
         ]);

@@ -6,6 +6,7 @@
 /.wwebjs_*
 .wwebjs*
 curl.txt
+uploads/
 
 # debug
 npm-debug.log*

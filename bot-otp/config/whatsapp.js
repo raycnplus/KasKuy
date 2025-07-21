@@ -1,5 +1,6 @@
 import pkg from 'whatsapp-web.js';
 import qrcode from 'qrcode-terminal';
+import axios from 'axios';
 
 const { Client, LocalAuth } = pkg;
 
@@ -27,5 +28,48 @@ client.on('authenticated', () => {
 client.on('auth_failure', msg => {
     console.error('❌ Gagal login:', msg);
 });
+
+
+
+// client.on('message', async (msg) => {
+  
+//   if (msg.hasMedia) {
+//     const media = await msg.downloadMedia();
+//     if (!media) return;
+
+//     const payload = {
+//       chatId: msg.from,
+//       type: media.mimetype,              // contoh: image/jpeg, audio/ogg
+//       filename: media.filename || 'file',
+//       caption: msg.body || '',           
+//       base64: media.data,               
+//       timestamp: msg.timestamp,
+//     };
+
+//     try {
+//       await axios.post('https://n8n.jcode.my.id/webhook-test/kaskuy', payload);
+//       console.log("📤 Media terkirim ke n8n");
+//     } catch (error) {
+//       console.error("❌ Gagal kirim media ke n8n:", error.message);
+//     }
+
+//   } else if (msg.type === 'chat') {
+//     // Pesan teks biasa
+//     const payload = {
+//       chatId: msg.from,
+//       type: 'chat',               
+//       message: msg.body,
+//       timestamp: msg.timestamp,
+//     };
+
+//     try {
+//       await axios.post('https://n8n.jcode.my.id/webhook-test/kaskuy', payload);
+//       console.log("📤 Teks terkirim ke n8n");
+//     } catch (error) {
+//       console.error("❌ Gagal kirim teks ke n8n:", error.message);
+//     }
+//   }
+// });
+
 
 client.initialize();
