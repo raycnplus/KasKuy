@@ -8,6 +8,7 @@ import Signup from './Pages/Auth';
 import OTP from './Pages/OTP';
 import Dashboard from './Pages/Dashboard'
 
+
 const root = ReactDOM.createRoot(document.getElementById('app'));
 root.render(
   <BrowserRouter>

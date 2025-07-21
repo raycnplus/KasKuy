@@ -8,12 +8,24 @@ const Navbar = () => {
         setIsMenuOpen(!isMenuOpen);
     };
 
+  const handleLogoClick = () => window.location.reload();
+
+  const handleScrollToSection = (id) => {
+    const section = document.getElementById(id);
+    const navbarOffset = 120;
+    if (section) {
+      const y =
+        section.getBoundingClientRect().top + window.pageYOffset - navbarOffset;
+      window.scrollTo({ top: y, behavior: "smooth" });
+    }
+  };
+
     return (
         <header className="flex items-center justify-between px-4 sm:px-6 lg:px-8 py-4 sm:py-5 bg-white/70 backdrop-blur-lg rounded-2xl shadow-lg border border-pink-200/50 sticky top-4 z-50 transition-all duration-300 hover:shadow-xl">
             <div className="flex items-center space-x-3">
-                <h1 className="text-2xl sm:text-3xl font-bold text-pink-600 tracking-tight">
+                <span className="text-2xl sm:text-3xl font-bold text-pink-600 tracking-tight" onClick={handleLogoClick}>
                     Kaskuy
-                </h1>
+                </span>
             </div>
 
             <nav className="hidden md:flex items-center space-x-6 lg:space-x-8 text-pink-600 font-medium">
