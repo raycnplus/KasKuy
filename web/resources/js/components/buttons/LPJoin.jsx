@@ -3,7 +3,7 @@ import { ArrowDown, ArrowRight } from "lucide-react";
 import Split from "../split";
 import Magnet from "../magnet";
 
-const LPJoin = () => {
+const LPJoin = ({ onLearnMoreClick }) => {
     const [hovered, setHovered] = useState(false);
     return (
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center justify-center lg:justify-start">
@@ -52,7 +52,10 @@ const LPJoin = () => {
                 </button>
             </Magnet>
 
-            <button className="relative inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 rounded-xl sm:rounded-2xl shadow-md border-2 border-pink-500 bg-transparent text-pink-600 transition-all duration-300 ease-out group cursor-pointer hover:bg-pink-50 hover:text-pink-700 w-full sm:w-auto">
+            <button
+                onClick={onLearnMoreClick}
+                className="relative inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 rounded-xl sm:rounded-2xl shadow-md border-2 border-pink-500 bg-transparent text-pink-600 transition-all duration-300 ease-out group cursor-pointer hover:bg-pink-50 hover:text-pink-700 w-full sm:w-auto"
+            >
                 <div className="flex items-center gap-2">
                     <div className="relative h-[24px] sm:h-[28px] leading-[24px] sm:leading-[28px] overflow-hidden w-[80px] sm:w-[100px]">
                         <span className="absolute inset-0 flex items-center justify-start text-sm sm:text-base font-medium transition-all duration-400 ease-in-out">
