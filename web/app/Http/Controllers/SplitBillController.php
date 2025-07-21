@@ -18,7 +18,7 @@ class SplitBillController extends Controller
         $splitBill = SplitBill::create([
             'created_by'   => Auth::id(),
             'title'        => $data['title'],
-            'total_amount' => 0, 
+            'total_amount' => 0,
         ]);
 
         return response()->json([
@@ -40,18 +40,30 @@ class SplitBillController extends Controller
 
         $summary = $splitBill->participants->map(function ($participant) use ($splitBill) {
             $total = 0;
+            $tax   = 0;
+            $items = [];
 
             foreach ($splitBill->items as $item) {
                 foreach ($item->assignments as $assignment) {
                     if ($assignment->user_id === $participant->user_id) {
                         $total += $assignment->share_amount;
+                        $tax   += $assignment->share_amount * 0.10;
+
+                        $items[] = [
+                            'item_name'     => $item->name,
+                            'price'         => $item->price,
+                            'quantity'      => $item->quantity,
+                            'share_amount'  => round($assignment->share_amount, 2)
+                        ];
                     }
                 }
             }
 
             return [
                 'user'  => $participant->user->username,
-                'total' => round($total, 2)
+                'total' => round($total, 2),
+                'tax'   => round($tax, 2),
+                'items' => $items
             ];
         });
 

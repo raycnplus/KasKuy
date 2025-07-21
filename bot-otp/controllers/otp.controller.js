@@ -3,7 +3,9 @@ import { sendWaMessage } from '../utils/send.js';
 export const sendOtp = async (req, res) => {
     const { phone, message } = req.body;
 
-    await sendWaMessage(phone, message);
+    const chatId = phone.endsWith('@c.us') ? phone : phone + '@c.us';
+
+    await sendWaMessage(chatId, message);
 
     res.json({ success: true, message: 'OTP dikirim' });
 };
