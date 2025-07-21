@@ -14,11 +14,17 @@ class Receipt extends Model
         'tax',
         'total',
         'cash',
-        'change'
+        'change',
+        'created_by'
     ];
 
     public function items()
     {
         return $this->hasMany(ReceiptItem::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }
