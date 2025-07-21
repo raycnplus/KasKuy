@@ -66,13 +66,25 @@ export const ocrWithGemini = async (req, res) => {
       ],
     });
 
-    const result = response.data.candidates?.[0]?.content?.parts?.[0]?.text;
+    const resultText = response.data.candidates?.[0]?.content?.parts?.[0]?.text;
 
     fs.unlinkSync(file.path);
 
-    return res.json({
-      result: result || 'No text extracted from image.',
-    });
+    const cleaned = resultText.replace(/```json|```/g, '').trim();
+
+    let parsedResult;
+    try {
+      parsedResult = JSON.parse(cleaned);
+    } catch (err) {
+      return res.status(500).json({
+        error: 'Failed to parse JSON from Gemini response',
+        raw: resultText,
+        details: err.message,
+      });
+    }
+
+    return res.json(parsedResult);
+
 
   } catch (error) {
     console.error('Gemini OCR Error:', error.response?.data || error.message);
