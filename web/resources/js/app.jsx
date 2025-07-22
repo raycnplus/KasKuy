@@ -7,11 +7,12 @@ import Login from './Pages/Auth';
 import Signup from './Pages/Auth';
 import OTP from './Pages/OTP';
 import Dashboard from './Pages/Dashboard'
-
+import { Toaster } from "react-hot-toast";
 
 const root = ReactDOM.createRoot(document.getElementById('app'));
 root.render(
   <BrowserRouter>
+  <Toaster position="top-center" reverseOrder={false} />
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<Login />} />

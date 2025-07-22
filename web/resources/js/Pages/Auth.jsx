@@ -2,11 +2,14 @@ import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowRight, Eye, EyeOff, Mail, Lock, User, Phone } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
+import debounce from "lodash.debounce";
+import { useCallback } from "react";
 import api from "../api";
 
 const AuthPages = () => {
     const location = useLocation();
     const [currentPage, setCurrentPage] = useState("login");
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         if (location.pathname === "/signup") {
@@ -202,9 +205,14 @@ const LoginPage = ({ onSwitchToSignup }) => {
             const token = res.data.data.token;
             localStorage.setItem("token", token);
             navigate("/dashboard");
-            toast.success('Berhasil masuk!');
+            toahfst.success("Berhasil masuk!");
         } catch (err) {
-            toast.error('Password/username salah!');
+            console.error("Error:", err.response?.data || err.message);
+            if (err.response?.status === 401) {
+                toast.error("Akun Tidak Ditemukan.");
+            } else {
+                toast.error("Akun tidak ditemukan.");
+            }
         } finally {
             setLoading(false);
         }
@@ -298,7 +306,8 @@ const LoginPage = ({ onSwitchToSignup }) => {
 const SignUpPage = ({ onSwitchToLogin }) => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        fullName: "", // atau 'name' sesuai dengan API backend
+        name: "",
+        username: "",
         phone: "",
         password: "",
         confirmPassword: "",
@@ -308,28 +317,64 @@ const SignUpPage = ({ onSwitchToLogin }) => {
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({});
     const [agreeToTerms, setAgreeToTerms] = useState(false);
+    const [usernameAvailable, setUsernameAvailable] = useState(null);
+    const [checkingUsername, setCheckingUsername] = useState(false);
+
+    const checkUsername = useCallback(
+        debounce(async (value) => {
+            if (value.length < 3) {
+                setUsernameAvailable(null);
+                setCheckingUsername(false);
+                return;
+            }
+            try {
+                const { data } = await api.get("/username-check", {
+                    params: { username: value },
+                });
+                setUsernameAvailable(data.available);
+            } catch {
+                setUsernameAvailable(false);
+            } finally {
+                setCheckingUsername(false);
+            }
+        }, 500),
+        []
+    );
 
     const handleInputChange = (field) => (e) => {
         setFormData((prev) => ({
             ...prev,
             [field]: e.target.value,
         }));
-        // Clear error when user starts typing
+        const val = e.target.value;
+        setFormData((prev) => ({ ...prev, [field]: val }));
         if (errors[field]) {
             setErrors((prev) => ({
                 ...prev,
                 [field]: null,
             }));
         }
+        if (field === "username") {
+            setCheckingUsername(true);
+            setUsernameAvailable(null);
+            checkUsername(val.trim().toLowerCase());
+        }
     };
 
     const validateForm = () => {
         const newErrors = {};
+        if (!formData.username.trim()) {
+            newErrors.username = "Username harus diisi";
+        } else if (formData.username.length < 3) {
+            newErrors.username = "Username minimal 3 karakter";
+        } else if (usernameAvailable === false) {
+            newErrors.username = "Username sudah dipakai";
+        }
 
-        if (!formData.fullName.trim()) {
-            newErrors.fullName = "Nama lengkap harus diisi";
-        } else if (formData.fullName.length < 2) {
-            newErrors.fullName = "Nama lengkap minimal 2 karakter";
+        if (!formData.name.trim()) {
+            newErrors.name = "Nama lengkap harus diisi";
+        } else if (formData.name.length < 2) {
+            newErrors.name = "Nama lengkap minimal 2 karakter";
         }
 
         if (!formData.phone.trim()) {
@@ -363,7 +408,7 @@ const SignUpPage = ({ onSwitchToLogin }) => {
         setLoading(true);
         try {
             const res = await api.post("/register", {
-                name: formData.fullName,
+                name: formData.name,
                 phone: formData.phone,
                 password: formData.password,
                 password_confirmation: formData.confirmPassword,
@@ -371,7 +416,7 @@ const SignUpPage = ({ onSwitchToLogin }) => {
             const token = res.data.data.token;
             localStorage.setItem("token", token);
             navigate("/dashboard");
-            toast.success('Akun berhasil dibuat!');
+            toast.success("Akun berhasil dibuat!");
         } catch (err) {
             toast.error("Akun gagal dibuat!");
         } finally {
@@ -401,10 +446,36 @@ const SignUpPage = ({ onSwitchToLogin }) => {
                     <AnimatedInput
                         icon={User}
                         type="text"
+                        placeholder="Username"
+                        value={formData.username}
+                        onChange={handleInputChange("username")}
+                        error={errors.username}
+                    />
+                    <div className="relative -mt-6 mb-4">
+                        {checkingUsername && (
+                            <span className="absolute right-4 top-1/2 -translate-y-1/2">
+                                ...
+                            </span>
+                        )}
+                        {usernameAvailable && !checkingUsername && (
+                            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-green-500">
+                                ✓
+                            </span>
+                        )}
+                        {usernameAvailable === false && !checkingUsername && (
+                            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-red-500">
+                                ✗
+                            </span>
+                        )}
+                    </div>
+
+                    <AnimatedInput
+                        icon={User}
+                        type="text"
                         placeholder="Nama Lengkap"
-                        value={formData.fullName}
-                        onChange={handleInputChange("fullName")}
-                        error={errors.fullName || errors.name}
+                        value={formData.name}
+                        onChange={handleInputChange("name")}
+                        error={errors.name || errors.name}
                     />
 
                     <AnimatedInput
