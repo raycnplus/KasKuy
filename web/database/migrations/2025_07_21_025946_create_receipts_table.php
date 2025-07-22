@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('receipts', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
             $table->string('store_name');
             $table->string('store_address')->nullable();
             $table->string('type')->nullable();
