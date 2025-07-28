@@ -2,19 +2,23 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 use Illuminate\Database\Eloquent\Model;
 
 class SplitBillParticipant extends Model
 {
-    protected $fillable = ['split_bill_id', 'user_id', 'total_share'];
+    use HasFactory;
+
+    protected $fillable = ['receipt_id', 'user_id'];
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function splitBill()
+    public function receipt()
     {
-        return $this->belongsTo(SplitBill::class);
+        return $this->belongsTo(Receipt::class);
     }
 }

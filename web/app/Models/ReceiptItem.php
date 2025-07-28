@@ -18,4 +18,9 @@ class ReceiptItem extends Model
     {
         return $this->belongsTo(Receipt::class);
     }
+
+    public function assignment()
+    {
+        return $this->hasOne(AssignItem::class, 'receipt_item_id');
+    }
 }
