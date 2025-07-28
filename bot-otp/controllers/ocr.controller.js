@@ -21,7 +21,7 @@ export const ocrWithGemini = async (req, res) => {
       contents: [
         {
           parts: [
-            {     
+            {
               text: `
                 Bantu ekstrak dan kembalikan data dari gambar struk ini dalam format JSON dengan struktur seperti berikut:
 

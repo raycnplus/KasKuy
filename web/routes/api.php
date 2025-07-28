@@ -8,11 +8,10 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\FriendshipController;
 use App\Http\Controllers\SearchController;
-use App\Http\Controllers\SplitBillController;
-use App\Http\Controllers\SplitBillItemController;
-use App\Http\Controllers\SplitBillParticipantController;
-use App\Http\Controllers\SplitBillAssignmentController;
 use App\Http\Controllers\ReceiptController;
+use App\Http\Controllers\ParticipantController;
+use App\Http\Controllers\AssignItemController;
+use App\Http\Controllers\ReceiptItemController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -28,6 +27,7 @@ Route::post('/forgot-pw/verify', [AuthController::class, 'verifyResetOtp']);
 Route::middleware('auth:sanctum', 'token.expired')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/change-password', [AuthController::class, 'changePassword']);
+    Route::get('/profile', [AuthController::class, 'showProfile']);
 
     Route::apiResource('category', CategoryController::class)->only([
         'index',
@@ -58,12 +58,19 @@ Route::middleware('auth:sanctum', 'token.expired')->group(function () {
     Route::get('/friends/search', [SearchController::class, 'searchFriends']);
     Route::get('/search', [SearchController::class, 'searchUser']);
 
-    Route::post('/split-bills', [SplitBillController::class, 'store']);
-    Route::get('/split-bills/{id}/summary', [SplitBillController::class, 'summary']);
-    Route::post('/split-bills/{id}/items', [SplitBillItemController::class, 'store']);
-    Route::post('/split-bills/{id}/participants', [SplitBillParticipantController::class, 'store']);
-    Route::post('/split-bills/items/{itemId}/assign', [SplitBillAssignmentController::class, 'assign']);
-
-    Route::post('/receipts', [ReceiptController::class, 'store']);
     Route::post('/ocr', [ReceiptController::class, 'ocr']);
+    Route::put('/receipts/{id}', [ReceiptController::class, 'updateOcr']);
+    Route::patch('/receipt-items/{id}', [ReceiptController::class, 'update']);
+
+    Route::get('/receipt-items/{receiptId}', [ReceiptItemController::class, 'showItemsByReceipt']);
+    Route::post('/receipt-items', [ReceiptItemController::class, 'store']);
+    Route::put('/receipt-items/{id}', [ReceiptItemController::class, 'update']);
+    Route::delete('/receipt-items/{id}', [ReceiptItemController::class, 'destroy']);
+
+    Route::get('/receipt/{receipt}/participants', [ParticipantController::class, 'showParticipantsByReceipt']);
+    Route::post('/receipt/{receipt}/participants', [ParticipantController::class, 'store']);
+    Route::delete('/receipt/{receipt}/participants/{participant}', [ParticipantController::class, 'destroy']);
+
+    Route::post('/receipt/{receipt}/assignments', [AssignItemController::class, 'store']);
+    Route::get('/receipts/summary/{receipt}', [ReceiptController::class, 'summary']);
 });

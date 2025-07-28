@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('split_bills', function (Blueprint $table) {
+        Schema::create('assign_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
-            $table->string('title');
-            $table->decimal('total_amount', 12, 2);
+            $table->foreignId('receipt_item_id')->constrained('receipt_items')->onDelete('cascade');
+            $table->foreignId('participant_id')->constrained('split_bill_participants')->onDelete('cascade');
             $table->timestamps();
+
+            $table->unique('receipt_item_id');
         });
     }
 
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('split_bills');
+        Schema::dropIfExists('assign_items');
     }
 };

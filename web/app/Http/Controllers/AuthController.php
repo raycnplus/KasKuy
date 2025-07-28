@@ -305,4 +305,27 @@ class AuthController extends Controller
             ], 500);
         }
     }
+
+    public function showProfile()
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthenticated. User not found or token invalid.'
+            ], 401);
+        }
+
+        return response()->json([
+            'message' => 'Profil pengguna',
+            'data' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'username' => $user->username,
+                'phone' => $user->phone,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at,
+            ]
+        ]);
+    }
 }

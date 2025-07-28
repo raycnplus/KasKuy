@@ -27,4 +27,9 @@ class Receipt extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+
+    public function participants()
+    {
+        return $this->hasMany(SplitBillParticipant::class, 'receipt_id');
+    }
 }
