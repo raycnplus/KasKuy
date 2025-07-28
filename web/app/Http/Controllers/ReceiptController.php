@@ -47,7 +47,7 @@ class ReceiptController extends Controller
                 'product'    => $item['product'] ?? 'Produk Tidak Dikenal',
                 'quantity'   => $item['quantity'] ?? 1,
                 'price'      => $item['price'] ?? 0,
-                'total'      => $item['total'] ?? null,
+                'total'      => $item['total'] ?? 0,
             ]);
         }
 
