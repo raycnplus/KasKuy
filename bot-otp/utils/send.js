@@ -1,5 +1,18 @@
 import { client } from '../config/whatsapp.js';
 
+export async function sendWaMessage(chatId, message) {
+  if (!chatId.endsWith('@c.us')) return console.log('❌ Bukan nomor pribadi.');
+
+  try {
+    const result = await client.sendMessage(chatId, message);
+    console.log('✅ Pesan terkirim:', result);
+    return result;
+  } catch (err) {
+    console.error('❌ Gagal kirim pesan:', err.message);
+    throw err;
+  }
+}
+
 // export async function sendWaMessage(phone, message) {
     
 //   if (message.fromMe) return;
@@ -13,16 +26,3 @@ import { client } from '../config/whatsapp.js';
 //     return await client.sendMessage(number, message);
 // }
 
-
-export async function sendWaMessage(chatId, message) {
-  if (!chatId.endsWith('@c.us')) return console.log('❌ Bukan nomor pribadi.');
-
-  try {
-    const result = await client.sendMessage(chatId, message);
-    console.log('✅ Pesan terkirim:', result);
-    return result;
-  } catch (err) {
-    console.error('❌ Gagal kirim pesan:', err.message);
-    throw err;
-  }
-}

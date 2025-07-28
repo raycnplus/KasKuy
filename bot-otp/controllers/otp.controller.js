@@ -5,6 +5,8 @@ export const sendOtp = async (req, res) => {
 
     const chatId = phone.endsWith('@c.us') ? phone : phone + '@c.us';
 
+    console.log(`Mengirim OTP ke ${chatId}:`, message);
+
     await sendWaMessage(chatId, message);
 
     res.json({ success: true, message: 'OTP dikirim' });

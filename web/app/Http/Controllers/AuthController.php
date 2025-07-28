@@ -55,7 +55,7 @@ class AuthController extends Controller
             'message' => "Kode OTP Anda untuk registrasi: $otp"
         ]);
 
-        return response()->json(['message' => 'OTP dikirim ke WhatsApp']);
+        return response()->json(['message' => 'OTP terikirim ke WhatsApp']);
     }
 
     public function verifyOtpAndRegister(Request $request)
@@ -152,7 +152,7 @@ class AuthController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Kode OTP baru berhasil dikirim ke WhatsApp.'
+            'message' => 'Kode OTP baru berhasil terikirim ke WhatsApp.'
         ]);
     }
 
@@ -179,7 +179,7 @@ class AuthController extends Controller
             ]);
 
             return response()->json([
-                'message' => 'Login success',
+                'message' => 'Login berhasil',
                 'user'    => new UserResource($user),
                 'token'   => $token,
             ]);
@@ -198,7 +198,7 @@ class AuthController extends Controller
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
-            'message' => 'Logout success'
+            'message' => 'Logout berhasil'
         ]);
     }
 
@@ -256,10 +256,10 @@ class AuthController extends Controller
 
             Http::post('http://localhost:5000/api/send-otp', [
                 'phone' => $data['phone'],
-                'message' => "OTP lupa password: $otp"
+                'message' => "OTP reset password: $otp"
             ]);
 
-            return response()->json(['message' => 'OTP dikirim.']);
+            return response()->json(['message' => 'OTP terikirim.']);
         } catch (\Throwable $e) {
             return response()->json([
                 'message'   => $e->getMessage(),
