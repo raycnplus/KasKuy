@@ -29,6 +29,7 @@ client.on('auth_failure', msg => {
     console.error('❌ Gagal login:', msg);
 });
 
+client.initialize();
 
 
 // client.on('message', async (msg) => {
@@ -72,4 +73,3 @@ client.on('auth_failure', msg => {
 // });
 
 
-client.initialize();

@@ -98,36 +98,38 @@ const sampleFeedbacks = [
 ];
 
 const faqItems = [
-  {
-    question: "Bagaimana cara mendaftar di Kaskuy?",
-    answer: "Untuk mendaftar di Kaskuy, klik tombol 'Daftar' di halaman utama, lalu lengkapi formulir dengan nama lengkap, nomor telepon, dan kata sandi. Setelah akun aktif, Anda bisa langsung mulai mencatat pemasukan dan pengeluaran, atau membuat kategori anggaran sesuai kebutuhan."
-  },
-  {
-    question: "Apakah Kaskuy bisa diakses melalui perangkat mobile?",
-    answer: "Ya, Kaskuy dirancang responsif dan kompatibel dengan smartphone serta tablet berbasis Android dan iOS. Anda bisa mengakses aplikasi melalui browser atau menggunakan aplikasi mobile (jika tersedia) untuk memantau transaksi, mengelola anggaran, atau melihat laporan keuangan kapan saja."
-  },
-  {
-    question: "Apa manfaat menggunakan Kaskuy bagi pengelolaan keuangan?",
-    answer: "Kaskuy membantu Anda mencatat transaksi secara real-time, mengelola anggaran bulanan, dan menganalisis pola pengeluaran. Fitur laporan bulanan dan notifikasi pengeluaran berlebihan memudahkan pengendalian keuangan pribadi atau kelompok secara efektif."
-  },
-  {
-    question: "Bagaimana jika saya ingin mengubah kategori transaksi atau anggaran?",
-    answer: "Anda dapat mengedit kategori transaksi atau anggaran langsung di menu 'Pengaturan'. Semua perubahan akan tercatat secara otomatis, dan riwayat transaksi lama tetap tersimpan untuk referensi analisis keuangan."
-  },
-  {
-    question: "Bagaimana Kaskuy memastikan keamanan data keuangan pengguna?",
-    answer: "Kaskuy menggunakan enkripsi SSL/TLS untuk melindungi data transaksi dan autentikasi dua faktor (2FA) untuk keamanan akun. Data disimpan di server terpusat dengan cadangan berkala, serta akses terbatas hanya untuk pengguna terotorisasi."
-  }
+    {
+        question: "Bagaimana cara mendaftar di Kaskuy?",
+        answer: "Untuk mendaftar di Kaskuy, klik tombol 'Daftar' di halaman utama, lalu lengkapi formulir dengan nama lengkap, nomor telepon, dan kata sandi. Setelah akun aktif, Anda bisa langsung mulai mencatat pemasukan dan pengeluaran, atau membuat kategori anggaran sesuai kebutuhan.",
+    },
+    {
+        question: "Apakah Kaskuy bisa diakses melalui perangkat mobile?",
+        answer: "Ya, Kaskuy dirancang responsif dan kompatibel dengan smartphone serta tablet berbasis Android dan iOS. Anda bisa mengakses aplikasi melalui browser atau menggunakan aplikasi mobile (jika tersedia) untuk memantau transaksi, mengelola anggaran, atau melihat laporan keuangan kapan saja.",
+    },
+    {
+        question: "Apa manfaat menggunakan Kaskuy bagi pengelolaan keuangan?",
+        answer: "Kaskuy membantu Anda mencatat transaksi secara real-time, mengelola anggaran bulanan, dan menganalisis pola pengeluaran. Fitur laporan bulanan dan notifikasi pengeluaran berlebihan memudahkan pengendalian keuangan pribadi atau kelompok secara efektif.",
+    },
+    {
+        question:
+            "Bagaimana jika saya ingin mengubah kategori transaksi atau anggaran?",
+        answer: "Anda dapat mengedit kategori transaksi atau anggaran langsung di menu 'Pengaturan'. Semua perubahan akan tercatat secara otomatis, dan riwayat transaksi lama tetap tersimpan untuk referensi analisis keuangan.",
+    },
+    {
+        question:
+            "Bagaimana Kaskuy memastikan keamanan data keuangan pengguna?",
+        answer: "Kaskuy menggunakan enkripsi SSL/TLS untuk melindungi data transaksi dan autentikasi dua faktor (2FA) untuk keamanan akun. Data disimpan di server terpusat dengan cadangan berkala, serta akses terbatas hanya untuk pengguna terotorisasi.",
+    },
 ];
 
 const LandingPage = () => {
-  const featuresRef = useRef(null);
+    const featuresRef = useRef(null);
 
-  const scrollToFeatures = () => {
-    if (featuresRef.current) {
-      featuresRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  };
+    const scrollToFeatures = () => {
+        if (featuresRef.current) {
+            featuresRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+    };
 
     return (
         <div className="w-screen min-h-screen bg-gradient-to-br from-pink-50 to-pink-100 text-pink-500/80 relative overflow-hidden">
@@ -186,7 +188,7 @@ const LandingPage = () => {
                             className="space-y-2 text-center lg:text-left"
                             id="join"
                         >
-                            <LPJoin onLearnMoreClick={scrollToFeatures}/>
+                            <LPJoin onLearnMoreClick={scrollToFeatures} />
                             <p className="text-xs sm:text-sm">
                                 ⭐⭐⭐⭐⭐ 4.5/5 Di PlayStore
                             </p>
@@ -214,8 +216,12 @@ const LandingPage = () => {
                 </div>
 
                 {/* Feature section */}
-                <div className="mt-12 sm:mt-16 lg:mt-20" ref={featuresRef} id="features">
-                    <div className="w-full bg-white/70 backdrop-blur-lg rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-10">
+                <div
+                    className="mt-12 sm:mt-16 lg:mt-20"
+                    ref={featuresRef}
+                    id="features"
+                >
+                    <div className="w-full border border-gray-200 bg-white/70 backdrop-blur-lg rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-10">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-center">
                             <div className="order-2 lg:order-1 flex justify-center">
                                 <div className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-full">
@@ -250,7 +256,7 @@ const LandingPage = () => {
                         </div>
                     </div>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-5">
-                        <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-6 sm:p-10 h-full">
+                        <div className="border border-gray-200 bg-white/70 backdrop-blur-lg rounded-3xl p-6 sm:p-10 h-full">
                             <Tabletnomove src={preview} />
                             <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-pink-600 mt-5">
                                 Lorem ipsum dolor sit amet consectetur
@@ -265,7 +271,7 @@ const LandingPage = () => {
                                 necessitatibus non ducimus illum doloribus!
                             </p>
                         </div>
-                        <div className="bg-white/70 backdrop-blur-lg rounded-3xl p-6 sm:p-10 h-full">
+                        <div className="border border-gray-200 bg-white/70 backdrop-blur-lg rounded-3xl p-6 sm:p-10 h-full">
                             <Tabletnomove src={preview} />
                             <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-pink-600 mt-5">
                                 Lorem ipsum dolor sit amet consectetur
@@ -304,12 +310,40 @@ const LandingPage = () => {
             <div className="relative z-10 px-4 sm:px-6 mb-12">
                 <h1 className="text-center text-3xl sm:text-4xl font-semibold text-pink-600 mb-6">
                     Frequently Asked Questions
-                    </h1>
+                </h1>
                 <AccordionFAQ items={faqItems} />
+                <div className="mt-10 border border-gray-200 bg-gradient-to-br from-pink-400/40 to-pink-600/40 w-auto h-auto rounded-3xl p-5 space-y-10">
+                    <div className="space-y-5">
+                        <h3 className="text-5xl font-semibold text-pink-600">
+                            Kritik dan Saran
+                        </h3>
+                        <p className="text-xl">
+                            Kami sangat menghargai masukan untuk kenyamanan
+                            penggunaan <br />
+                            Kaskuy yang lebih baik!
+                        </p>
+                    </div>
+                    <form className="grid grid-cols-2 gap-5">
+                        <input
+                            className="rounded-2xl border border-gray-200 p-4 w-full"
+                            placeholder="Masukkan"
+                        />
+                        <button className="relative inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 rounded-xl sm:rounded-2xl shadow-md bg-gradient-to-b from-pink-400 to-pink-600 text-white transition-all duration-300 ease-out group cursor-pointer w-2/6">
+                            <div className="flex items-center gap-2">
+                                <div className="relative h-[24px] sm:h-[28px] w-[100px] leading-[24px] sm:leading-[28px] overflow-hidden">
+                                    <span className="absolute inset-0 flex items-center justify-start text-sm sm:text-base font-medium transition-all duration-400 ease-in-out">
+                                        Pelajari Fitur
+                                    </span>
+                                </div>
+                                <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform duration-300 text-white-600 group-hover:text-white-700" />
+                            </div>
+                        </button>
+                    </form>
+                </div>
             </div>
             <Footer />
         </div>
     );
-}
+};
 
-export default LandingPage
+export default LandingPage;
