@@ -10,6 +10,32 @@ use Carbon\Month;
 
 class ReportController extends Controller
 {
+    public function balance(Request $request)
+    {
+        try {
+            $user = $request->user();
+
+            $transactions = Transaction::where('user_id', $user->id)->get();
+
+            $totalIncome = $transactions->where('type', 'Pemasukan')->sum('amount');
+            $totalExpense = $transactions->where('type', 'Pengeluaran')->sum('amount');
+
+            $balance = $totalIncome - $totalExpense;
+
+            return response()->json([
+                'balance'       => $balance,
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message'   => $e->getMessage(),
+                'exception' => class_basename($e),
+                'line'      => $e->getLine(),
+                'file'      => $e->getFile(),
+            ], 500);
+        }
+    }
+
+
     public function daily(Request $request)
     {
         try {
@@ -115,6 +141,89 @@ class ReportController extends Controller
                 'total_income'  => $income,
                 'total_expense' => $expense,
                 'transactions'  => $transactions,
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message'   => $e->getMessage(),
+                'exception' => class_basename($e),
+                'line'      => $e->getLine(),
+                'file'      => $e->getFile(),
+            ], 500);
+        }
+    }
+
+    public function latestTransactions(Request $request)
+    {
+        try {
+            $user = $request->user();
+
+            $transactions = Transaction::where('user_id', $user->id)
+                ->orderBy('date', 'desc')
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            if ($transactions->isEmpty()) {
+                return response()->json([
+                    'message' => 'Belum ada transaksi.'
+                ], 404);
+            }
+
+            return response()->json([
+                'total'       => $transactions->count(),
+                'transactions' => $transactions
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message'   => $e->getMessage(),
+                'exception' => class_basename($e),
+                'line'      => $e->getLine(),
+                'file'      => $e->getFile(),
+            ], 500);
+        }
+    }
+
+
+    public function incomeHistory(Request $request)
+    {
+        try {
+            $user = $request->user();
+
+            $incomes = Transaction::where('user_id', $user->id)
+                ->where('type', 'Pemasukan')
+                ->orderBy('date', 'desc')
+                ->get();
+
+            return response()->json([
+                'type'      => 'Pemasukan',
+                'total'     => $incomes->sum('amount'),
+                'count'     => $incomes->count(),
+                'data'      => $incomes,
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message'   => $e->getMessage(),
+                'exception' => class_basename($e),
+                'line'      => $e->getLine(),
+                'file'      => $e->getFile(),
+            ], 500);
+        }
+    }
+
+    public function expenseHistory(Request $request)
+    {
+        try {
+            $user = $request->user();
+
+            $expenses = Transaction::where('user_id', $user->id)
+                ->where('type', 'Pengeluaran')
+                ->orderBy('date', 'desc')
+                ->get();
+
+            return response()->json([
+                'type'      => 'Pengeluaran',
+                'total'     => $expenses->sum('amount'),
+                'count'     => $expenses->count(),
+                'data'      => $expenses,
             ]);
         } catch (\Throwable $e) {
             return response()->json([

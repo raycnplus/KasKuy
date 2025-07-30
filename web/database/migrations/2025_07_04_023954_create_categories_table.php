@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('icon')->nullable();
             $table->enum('type', ['Pemasukan', 'Pengeluaran']);
+            $table->enum('priority', ['Low','Medium','High'])->nullable();
             $table->timestamps();
         });
     }

@@ -23,6 +23,7 @@ class CategoryController extends Controller
                 'name' => 'required|string|max:255',
                 'icon' => 'required',
                 'type' => 'required|in:Pemasukan,Pengeluaran',
+                'priority' => 'required|in:Low,Medium,High'
             ]);
 
             $category = Category::create([
@@ -30,6 +31,7 @@ class CategoryController extends Controller
                 'name'    => $data['name'],
                 'icon'    => $data['icon'],
                 'type'  => $data['type'],
+                'priority' => $data['priority']
             ]);
 
             return new CategoryResource($category);
@@ -54,6 +56,7 @@ class CategoryController extends Controller
                 'name' => 'sometimes|required|string|max:255',
                 'type' => 'sometimes|required|in:Pemasukan,Pengeluaran',
                 'icon' => 'sometimes|required',
+                'priority' => 'sometimes|required|in:Low,Medium,High'
             ]);
 
             $category->update($data);
@@ -78,5 +81,39 @@ class CategoryController extends Controller
         $category->delete();
 
         return response()->json(['message' => 'Category deleted.']);
+    }
+
+    public function IncomeCategories()
+    {
+        $userId = Auth::id();
+
+        $pemasukan = Category::where('user_id', $userId)
+            ->where('type', 'Pemasukan')
+            ->get();
+
+        if ($pemasukan->isEmpty()) {
+            return response()->json(['message' => 'Anda tidak memiliki kategori pemasukan.'], 404);
+        }
+
+        return response()->json([
+            'Pemasukan' => CategoryResource::collection($pemasukan),
+        ]);
+    }
+
+    public function ExpenseCategories()
+    {
+        $userId = Auth::id();
+
+        $pengeluaran = Category::where('user_id', $userId)
+            ->where('type', 'Pengeluaran')
+            ->get();
+
+        if ($pengeluaran->isEmpty()) {
+            return response()->json(['message' => 'Anda tidak memiliki kategori pengeluaran.'], 404);
+        }
+
+        return response()->json([
+            'Pengeluaran' => CategoryResource::collection($pengeluaran),
+        ]);
     }
 }

@@ -20,6 +20,7 @@ class CategoryResource extends JsonResource
             'name' => $this->name,
             'icon' => $this->icon,
             'type' => $this->type,
+            'priority' => $this->priority,
             'created_at' => $this->created_at->toDateTimeString(),
         ];
     }

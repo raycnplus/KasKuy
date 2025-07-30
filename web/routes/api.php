@@ -35,6 +35,8 @@ Route::middleware('auth:sanctum', 'token.expired')->group(function () {
         'update',
         'destroy'
     ]);
+    Route::get('/category/IncomeCategory', [CategoryController::class, 'IncomeCategories']);
+    Route::get('/category/ExpenseCategory', [CategoryController::class, 'ExpenseCategories']);
 
     Route::apiResource('transaction', TransactionController::class)->only([
         'index',
@@ -44,10 +46,14 @@ Route::middleware('auth:sanctum', 'token.expired')->group(function () {
         'destroy'
     ]);
 
+    Route::get('/reports/balance', [ReportController::class, 'balance']);
     Route::get('/reports/daily',    [ReportController::class, 'daily']);
     Route::get('/reports/weekly',   [ReportController::class, 'weekly']);
     Route::get('/reports/monthly',  [ReportController::class, 'monthly']);
     Route::get('/reports/yearly',  [ReportController::class, 'yearly']);
+    Route::get('/reports/latest-transaction', [ReportController::class, 'latestTransactions']);
+    Route::get('/reports/IncomeHistory', [ReportController::class, 'incomeHistory']);
+    Route::get('/reports/ExpenseHistory', [ReportController::class, 'expenseHistory']);
 
     Route::post('/friend-request', [FriendshipController::class, 'sendRequest']);
     Route::post('/friend-request/respond', [FriendshipController::class, 'respondRequest']);
