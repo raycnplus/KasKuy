@@ -1,0 +1,63 @@
+/* Add a scrollable height to the body */
+body {
+  height: 300vh; /* 300% of the viewport height */
+  background-color: #111;
+  color: #fff;
+  font-family: 'Helvetica', 'Arial', sans-serif;
+  /* Removed flex properties to allow normal scrolling */
+  overflow-x: hidden;
+}
+
+/* The main stage for our animation */
+.container {
+  position: relative;
+  width: 800px;
+  height: 100vh; /* Make the container fill the screen height */
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto; /* Center the container */
+}
+
+/* --- All other CSS from before remains the same --- */
+
+/* Style the text and icons on the first screen */
+.initial-screen h1 {
+  font-size: 4rem;
+  margin-bottom: 40px;
+}
+
+.icons-start {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.icon {
+  font-size: 4rem;
+  background-color: #333;
+  padding: 10px;
+  border-radius: 15px;
+}
+
+.final-screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  font-size: 2.5rem;
+  line-height: 1.5;
+}
+
+.placeholder {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  vertical-align: middle;
+}

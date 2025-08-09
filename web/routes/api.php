@@ -54,6 +54,8 @@ Route::middleware('auth:sanctum', 'token.expired')->group(function () {
     Route::get('/reports/latest-transaction', [ReportController::class, 'latestTransactions']);
     Route::get('/reports/IncomeHistory', [ReportController::class, 'incomeHistory']);
     Route::get('/reports/ExpenseHistory', [ReportController::class, 'expenseHistory']);
+Route::get('/reports/monthly-compare', [ReportController::class, 'monthlyCompare']);
+
 
     Route::post('/friend-request', [FriendshipController::class, 'sendRequest']);
     Route::post('/friend-request/respond', [FriendshipController::class, 'respondRequest']);

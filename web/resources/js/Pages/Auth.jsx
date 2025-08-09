@@ -214,7 +214,7 @@ const LoginPage = ({ onSwitchToSignup, onSwitchToForgot }) => {
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="mr-2 text-pink-500"
+                className="accent-pink-500/35 mr-2 text-pink-500"
               />
               <span className="text-pink-600">Ingat saya</span>
             </label>
@@ -457,7 +457,7 @@ const SignUpPage = ({ onSwitchToLogin }) => {
                     type="checkbox"
                     checked={agreeToTerms}
                     onChange={(e) => setAgreeToTerms(e.target.checked)}
-                    className="mr-2 mt-1 text-pink-500"
+                    className="accent-pink-500/35 mr-2 mt-1 text-pink-500"
                   />
                   <span className="text-pink-600">
                     Saya setuju dengan{" "}

@@ -26,10 +26,7 @@ const Dashboard = () => {
                     </div>
                     <p className="font-semibold text-xl sm:text-3xl">Fardhan</p>
                 </div>
-
-                {/* Main stats section */}
                 <div className="mt-[30px] sm:mt-[40px] grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-0">
-                    {/* Balance section */}
                     <div>
                         <p className="text-white text-2xl sm:text-4xl">
                             Sisa uang kamu
@@ -44,7 +41,6 @@ const Dashboard = () => {
 
                     {/* Stats cards */}
                     <div className="grid grid-cols-2 gap-3">
-                        {/* Pengeluaran */}
                         <div className="bg-gradient-to-br from-white/70 to-white/80 border-2 border-grey-300 backdrop-blur-xl w-full p-4 sm:p-5 rounded-2xl lg:rounded-3xl">
                             <div className="flex items-center gap-2 lg:gap-3 mb-1 lg:mb-2">
                                 <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-green-500 flex items-center justify-center">
@@ -61,8 +57,6 @@ const Dashboard = () => {
                                 Naik 50% dari bulan lalu
                             </p>
                         </div>
-
-                        {/* Pemasukan */}
                         <div className="bg-gradient-to-br from-white/70 to-white/80 border-2 border-grey-300 backdrop-blur-xl w-full p-4 sm:p-5 rounded-2xl lg:rounded-3xl">
                             <div className="flex items-center gap-2 lg:gap-3 mb-1 lg:mb-2">
                                 <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-red-500 flex items-center justify-center">
@@ -98,7 +92,7 @@ const Dashboard = () => {
                                 Catat
                             </h1>
                         </a>
-                        <a href="/catat" className="flex flex-col items-center">
+                        <a href="/DaftarKas" className="flex flex-col items-center">
                             <div className="bg-white/90 backdrop-blur-xl hover:bg-white/70 active:scale-95 transition ease-in-out duration-300 h-[65px] w-[65px] sm:h-[100px] sm:w-[100px] lg:h-[120px] lg:w-[120px] rounded-2xl lg:rounded-3xl p-3 sm:p-4 lg:p-5 flex justify-center items-center mb-1">
                                 <Notebook className="w-[30px] h-[30px] sm:w-[50px] sm:h-[50px] lg:w-[70px] lg:h-[70px]" />
                             </div>
