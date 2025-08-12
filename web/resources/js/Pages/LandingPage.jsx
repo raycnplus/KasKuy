@@ -14,6 +14,8 @@ import Tabletnomove from "../components/Tabletnomove.jsx";
 import Navbar from "../components/lainnya/Navbar.jsx";
 import Footer from "../components/lainnya/Footer.jsx";
 import AccordionFAQ from "../components/lainnya/AccordionFAQ.jsx";
+import api from "../api.js";
+
 const sampleFeedbacks = [
     {
         id: 1,

@@ -38,7 +38,7 @@ class AuthController extends Controller
                 'name.max'          => 'Nama maksimal 255 karakter',
             ]
         );
-
+        
         // Cache data untuk verifikasi selanjutnya
         Cache::put('register_' . $data['phone'], $data, now()->addMinutes(10));
 
@@ -104,7 +104,7 @@ class AuthController extends Controller
         $token = $user->createToken('auth_token')->plainTextToken;
 
         $user->tokens()->latest()->first()->update([
-            'expires_at' => now()->addMinutes(60)
+            'expires_at' => now()->addHour(24)
         ]);
 
         return response()->json([

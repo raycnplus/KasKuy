@@ -23,7 +23,7 @@ class CategoryController extends Controller
                 'name' => 'required|string|max:255',
                 'icon' => 'required',
                 'type' => 'required|in:Pemasukan,Pengeluaran',
-                'priority' => 'required|in:Low,Medium,High'
+                'priority' => 'nullable|in:Low,Medium,High'
             ]);
 
             $category = Category::create([

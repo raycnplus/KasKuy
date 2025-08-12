@@ -1,47 +1,76 @@
-import { React, Navigate } from "react";
+// main.jsx
+import React, { Suspense, useEffect } from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Toaster, toast } from "react-hot-toast";
+
+// Pages
 import LandingPage from "./Pages/LandingPage";
-import ProtRoute from "./components/lainnya/ProtRoute";
 import Login from "./Pages/Auth";
 import Signup from "./Pages/Auth";
 import OTP from "./Pages/OTP";
-import Notfound from "./Pages/Notfound";
-import Dashboard from "./Pages/user/Dashboard";
-import Catat from "./Pages/user/Catat";
-import DaftarKas from "./Pages/user/DaftarKas";
-import Analitik from "./Pages/user/Analitik";
 import D2 from "./Pages/d2";
 import RDashboard from "./Pages/R/RDashboard";
 import RCatat from "./Pages/R/RCatat";
 import RDKas from "./Pages/R/RDaftarKas";
 import RAnalitik from "./Pages/R/RAnalitik";
-import RLPage from "./Pages/R/RLandingpage";
-import { Toaster } from "react-hot-toast";
+import RCategory from "./Pages/R/RCategory";
+import Splitbill from "./Pages/R/Splitbill";
+import Friends from "./Pages/R/Friends";
+import Settings from "./Pages/R/Settings.jsx";
+// Protected wrapper
+import ProtRoute from "./components/lainnya/ProtRoute";
+
+// 404: tampilkan toast lalu redirect ke "/"
+function NotFound() {
+  useEffect(() => {
+    toast.error("Halaman tidak ditemukan!", { position: "top-center", duration: 2000 });
+  }, []);
+  return <Navigate to="/" replace />;
+}
+
+// Fallback super ringan biar gak blank saat render awal
+function AppFallback() {
+  return (
+    <div style={{
+      minHeight: "100vh",
+      display: "grid",
+      placeItems: "center",
+      fontFamily: "system-ui, sans-serif"
+    }}>
+      <div>Memuat…</div>
+    </div>
+  );
+}
 
 const root = ReactDOM.createRoot(document.getElementById("app"));
 root.render(
-    <BrowserRouter>
-        <Toaster position="top-center" reverseOrder={false} />
-        <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/otp" element={<OTP />} />
-            <Route path="/secret" element={<D2 />} />
-            <Route path="/sds" element={<RDashboard />} />
-            <Route path="/sct" element={<RCatat />} />
-            <Route path="/sdk" element={<RDKas />} />
-            <Route path="/san" element={<RAnalitik />} />
-            <Route path="/sdk" element={<RDKas />} />
-            <Route path="/slp" element={<RLPage />} />
-            <Route element={<ProtRoute />}>
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/catat" element={<Catat />} />
-                <Route path="/daftarkas" element={<DaftarKas />} />
-                <Route path="/analitik" element={<Analitik />} />
-            </Route>
-            <Route path="*" element={<Notfound />} />
-        </Routes>
-    </BrowserRouter>
+  <BrowserRouter>
+    <Toaster position="top-center" reverseOrder={false} />
+    <Suspense fallback={<AppFallback />}>
+      <Routes>
+        {/* Public */}
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/otp" element={<OTP />} />
+        <Route path="/secret" element={<D2 />} />
+
+        {/* Protected */}
+        <Route element={<ProtRoute />}>
+          <Route path="/dashboard" element={<RDashboard />} />
+          <Route path="/catat" element={<RCatat />} />
+          <Route path="/daftarkas" element={<RDKas />} />
+          <Route path="/analitik" element={<RAnalitik />} />
+            <Route path="/split-bill" element={<Splitbill />} />
+            <Route path="/settingsa/friends" element={<Friends />} />
+            <Route path="/settings" element={<Settings />} />
+          <Route path="/settingsa/category" element={<RCategory />} />
+        </Route>
+
+        {/* 404 */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Suspense>
+  </BrowserRouter>
 );

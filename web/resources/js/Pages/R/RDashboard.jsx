@@ -18,48 +18,7 @@ import {
   AlertCircle,
   RefreshCw,
 } from "lucide-react";
-
-const axios = (() => {
-  const api = window.axios?.create
-    ? window.axios.create({ baseURL: "http://localhost:8000/api/", withCredentials: true })
-    : null;
-  if (api) {
-    api.interceptors.request.use((config) => {
-      const token = localStorage.getItem("token");
-      if (token) config.headers["Authorization"] = `Bearer ${token}`;
-      return config;
-    });
-  }
-  return api;
-})();
-
-class ApiService {
-  constructor() {
-    this.api = axios || this.createAxiosInstance();
-  }
-  createAxiosInstance() {
-    return { get: (url) => this.fallbackRequest("GET", url) };
-  }
-  async fallbackRequest(method, url) {
-    const token = localStorage.getItem("token");
-    const headers = { "Content-Type": "application/json", ...(token && { Authorization: `Bearer ${token}` }) };
-    const res = await fetch(`http://localhost:8000/api${url}`, { method, headers, credentials: "include" });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return { data: await res.json() };
-  }
-  async getMonthlyCompare(month, year) {
-    const m = String(month).padStart(2, "0");
-    return (await this.api.get(`/reports/monthly-compare?month=${m}&year=${year}`)).data;
-  }
-  async getLatestTransactions(month, year) {
-    const m = String(month).padStart(2, "0");
-    return (await this.api.get(`/reports/latest-transaction?month=${m}&year=${year}`)).data;
-  }
-  async getProfile() {
-    const res = await this.api.get("/profile");
-    return res.data;
-  }
-}
+import api from "../../api";
 
 const months = [
   "Januari",
@@ -102,9 +61,9 @@ const RDashboard = () => {
   const [isMonthlyLoading, setIsMonthlyLoading] = useState(false);
   const [isTransactionsLoading, setIsTransactionsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [apiService] = useState(() => new ApiService());
   const monthlyLockRef = useRef(false);
   const txLockRef = useRef(false);
+  const pickerRef = useRef(null);
 
   const monthNum = selectedDate.getMonth() + 1;
   const yearNum = selectedDate.getFullYear();
@@ -125,13 +84,43 @@ const RDashboard = () => {
     return () => clearInterval(t);
   }, []);
 
+  useEffect(() => {
+    const onClickOutside = (e) => {
+      if (pickerRef.current && !pickerRef.current.contains(e.target)) setShowDatePicker(false);
+    };
+    const onEsc = (e) => {
+      if (e.key === "Escape") setShowDatePicker(false);
+    };
+    document.addEventListener("mousedown", onClickOutside);
+    document.addEventListener("keydown", onEsc);
+    return () => {
+      document.removeEventListener("mousedown", onClickOutside);
+      document.removeEventListener("keydown", onEsc);
+    };
+  }, []);
+
+  const fetchMonthlyCompare = async (month, year) => {
+    const { data } = await api.get("/reports/monthly-compare", { params: { month, year } });
+    return data;
+  };
+
+  const fetchLatestTransactions = async (month, year) => {
+    const { data } = await api.get("/reports/latest-transaction", { params: { month, year } });
+    return data;
+  };
+
+  const fetchProfile = async () => {
+    const { data } = await api.get("/profile");
+    return data?.data || data;
+  };
+
   const loadMonthly = useCallback(
     async (withSpinner = false) => {
       if (monthlyLockRef.current) return;
       try {
         if (withSpinner) setIsMonthlyLoading(true);
         monthlyLockRef.current = true;
-        const data = await apiService.getMonthlyCompare(monthNum, yearNum);
+        const data = await fetchMonthlyCompare(monthNum, yearNum);
         const cur = data.current || {};
         const prev = data.previous || {};
         setMonthlyIncome(Number(cur.income || 0));
@@ -145,19 +134,25 @@ const RDashboard = () => {
         if (withSpinner) setIsMonthlyLoading(false);
       }
     },
-    [apiService, monthNum, yearNum]
+    [monthNum, yearNum]
   );
 
   const getEmojiForCategory = (name) => {
     const map = { Makanan: "🍽️", Transportasi: "⛽", Hiburan: "🎉", Belanja: "🛒", Gaji: "💰", Kesehatan: "🏥", Pendidikan: "📚", Lainnya: "📋" };
     return map[name] || "📋";
   };
+
   const formatDateFromAPI = (s) => {
     const d = new Date(s);
     return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
   };
+
   const formatTimeFromAPI = (s) => new Date(s).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", hour12: false });
-  const formatCurrency = (n) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(n).replace("IDR", "Rp");
+
+  const formatCurrency = (n) =>
+    new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 })
+      .format(Number(n || 0))
+      .replace("IDR", "Rp");
 
   const loadTransactions = useCallback(
     async (withSpinner = false) => {
@@ -165,15 +160,19 @@ const RDashboard = () => {
       try {
         if (withSpinner) setIsTransactionsLoading(true);
         txLockRef.current = true;
-        const res = await apiService.getLatestTransactions(monthNum, yearNum);
+        const res = await fetchLatestTransactions(monthNum, yearNum);
         const raw = res.transactions || res.data || res || [];
         const mapped = Array.isArray(raw)
           ? raw.map((tx) => {
-              const { title, desc } = splitTitleAndDesc(tx.description || "");
+              const { title, desc } = splitTitleAndDesc(tx.title || tx.description || "");
               const d = new Date(tx.date);
+              const catIcon =
+                tx.category?.icon ||
+                (Array.isArray(tx.category?.icons) && tx.category.icons.length ? tx.category.icons[0] : null) ||
+                getEmojiForCategory(tx.category?.name || "Lainnya");
               return {
                 id: tx.id,
-                emoji: getEmojiForCategory(tx.category?.name || "Lainnya"),
+                emoji: catIcon,
                 title: title || "Transaksi",
                 Transaksi: tx.type,
                 tanggal: formatDateFromAPI(tx.date),
@@ -195,18 +194,17 @@ const RDashboard = () => {
         if (withSpinner) setIsTransactionsLoading(false);
       }
     },
-    [apiService, monthNum, yearNum]
+    [monthNum, yearNum]
   );
 
   const loadProfile = useCallback(async () => {
     try {
-      const res = await apiService.getProfile();
-      const data = res.data || res;
+      const data = await fetchProfile();
       setUserProfile(data);
     } catch {
       setUserProfile({ name: "User" });
     }
-  }, [apiService]);
+  }, []);
 
   useEffect(() => {
     const init = async () => {
@@ -262,6 +260,7 @@ const RDashboard = () => {
       setSelectedDate(d);
       setShowDatePicker(false);
     };
+
     const handleYearChange = (dir) => {
       const ny = currentYear + dir;
       if (ny > todayYear) return;
@@ -270,10 +269,11 @@ const RDashboard = () => {
       d.setFullYear(ny);
       setSelectedDate(d);
     };
+
     const isMonthDisabled = (idx) => currentYear > todayYear || (currentYear === todayYear && idx > todayMonth);
 
     return (
-      <div className="absolute top-full right-0 mt-2 bg-white/95 backdrop-blur-md rounded-2xl p-6 shadow-2xl border border-white/30 z-[9999] min-w-[320px]">
+      <div ref={pickerRef} className="absolute top-full right-0 mt-2 bg-white/95 backdrop-blur-md rounded-2xl p-6 shadow-2xl border border-white/30 z-[1000] min-w-[320px]">
         <div className="flex items-center justify-between mb-6">
           <button onClick={() => handleYearChange(-1)} className="p-2 hover:bg-emerald-50 rounded-lg transition-colors">
             <ChevronLeft className="w-5 h-5 text-emerald-600" />
@@ -348,31 +348,6 @@ const RDashboard = () => {
     );
   }
 
-  const stats = [
-    {
-      label: "Pengeluaran",
-      amount: monthlyExpense,
-      prev: prevMonthlyExpense,
-      change: expenseChange,
-      icon: ArrowDownRight,
-      color: "from-rose-500 to-red-600",
-      bgColor: "bg-rose-50",
-      textColor: "text-rose-600",
-      borderColor: "border-rose-200",
-    },
-    {
-      label: "Pemasukan",
-      amount: monthlyIncome,
-      prev: prevMonthlyIncome,
-      change: incomeChange,
-      icon: ArrowUpRight,
-      color: "from-emerald-500 to-green-600",
-      bgColor: "bg-emerald-50",
-      textColor: "text-emerald-600",
-      borderColor: "border-emerald-200",
-    },
-  ];
-
   return (
     <div className="w-full min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-100 text-slate-800 relative overflow-hidden">
       <div className="absolute inset-0 overflow-hidden">
@@ -386,9 +361,12 @@ const RDashboard = () => {
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white text-2xl shadow-lg ring-4 ring-white/20">👤</div>
             <div>
-              <h1 className="font-bold text-2xl sm:text-3xl text-slate-800">{getGreeting()}, {userProfile?.name || "User"}!</h1>
+              <h1 className="font-bold text-2xl sm:text-3xl text-slate-800">
+                {getGreeting()}, {userProfile?.name || "User"}!
+              </h1>
               <p className="text-sm text-slate-600 mt-1">
-                {currentTime.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", hour12: false })} - {currentTime.toLocaleDateString("id-ID", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+                {currentTime.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", hour12: false })} -{" "}
+                {currentTime.toLocaleDateString("id-ID", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
               </p>
               {userProfile?.username && <p className="text-xs text-slate-500 mt-1">@{userProfile.username}</p>}
             </div>
@@ -412,20 +390,36 @@ const RDashboard = () => {
                       className="flex items-center gap-2 px-4 py-3 bg-white/90 backdrop-blur-md rounded-xl border border-white/30 text-slate-700 font-medium hover:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all duration-200"
                     >
                       <Calendar className="w-4 h-4 text-emerald-600" />
-                      <span>{months[monthNum - 1]} {yearNum}</span>
+                      <span>
+                        {months[monthNum - 1]} {yearNum}
+                      </span>
                       <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${showDatePicker ? "rotate-180" : ""}`} />
                     </button>
                     {showDatePicker && <MonthYearPicker />}
                   </div>
                 </div>
                 <div className="flex items-baseline gap-4 mb-1">
-                  <h1 className={`text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent transition-all duration-300 ${isBalanceHidden ? "blur-lg" : ""}`}>
+                  <h1
+                    className={`text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent transition-all duration-300 ${
+                      isBalanceHidden ? "blur-lg" : ""
+                    }`}
+                  >
                     {formatCurrency(computedBalance)}
                   </h1>
+                  {isMonthlyLoading && (
+                    <div className="flex items-center gap-2 px-2 py-1 rounded-md bg-emerald-50">
+                      <RefreshCw className="w-3 h-3 text-emerald-600 animate-spin" />
+                      <span className="text-xs text-emerald-700">Updating</span>
+                    </div>
+                  )}
                 </div>
                 <div className="mt-1">
                   {balanceChange !== null && balanceChange !== 0 ? (
-                    <p className={`inline-block text-sm font-medium ${balanceChange > 0 ? "text-emerald-600 border-2 border-emerald-600/40" : "text-rose-600 border-2 border-rose-600/40"} px-2 py-1 rounded-lg mt-4`}>
+                    <p
+                      className={`inline-block text-sm font-medium ${
+                        balanceChange > 0 ? "text-emerald-600 border-2 border-emerald-600/40" : "text-rose-600 border-2 border-rose-600/40"
+                      } px-2 py-1 rounded-lg mt-4`}
+                    >
                       {balanceChange > 0 ? "+" : ""}
                       {balanceChange}% dari bulan sebelumnya
                     </p>
@@ -442,7 +436,6 @@ const RDashboard = () => {
                     icon: ArrowDownRight,
                     color: "from-rose-500 to-red-600",
                     bgColor: "bg-rose-50",
-                    textColor: "text-rose-600",
                     borderColor: "border-rose-200",
                   },
                   {
@@ -452,7 +445,6 @@ const RDashboard = () => {
                     icon: ArrowUpRight,
                     color: "from-emerald-500 to-green-600",
                     bgColor: "bg-emerald-50",
-                    textColor: "text-emerald-600",
                     borderColor: "border-emerald-200",
                   },
                 ].map((stat) => {
@@ -460,10 +452,7 @@ const RDashboard = () => {
                   const showPct = stat.change !== null && stat.change !== 0;
                   const up = (stat.change || 0) > 0;
                   return (
-                    <div
-                      key={stat.label}
-                      className={`bg-white/80 backdrop-blur-md rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-2 ${stat.borderColor} group relative`}
-                    >
+                    <div key={stat.label} className={`bg-white/80 backdrop-blur-md rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-2 ${stat.borderColor} group relative`}>
                       <div className="flex items-center justify-between mb-3">
                         <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
                           <Icon className="w-6 h-6 text-white" />
@@ -491,9 +480,9 @@ const RDashboard = () => {
           <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">Aksi Cepat</h2>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { href: "/sct", icon: Download, label: "Catat", desc: "Tambah transaksi", color: "from-blue-500 to-blue-600" },
-              { href: "/sdk", icon: Notebook, label: "Daftar Kas", desc: "Lihat semua kas", color: "from-purple-500 to-purple-600" },
-              { href: "/san", icon: BarChart3, label: "Analitik", desc: "Laporan detail", color: "from-orange-500 to-orange-600" },
+              { href: "/catat", icon: Download, label: "Catat", desc: "Tambah transaksi", color: "from-blue-500 to-blue-600" },
+              { href: "/daftarkas", icon: Notebook, label: "Daftar Kas", desc: "Lihat semua kas", color: "from-purple-500 to-purple-600" },
+              { href: "/analitik", icon: BarChart3, label: "Analitik", desc: "Laporan detail", color: "from-orange-500 to-orange-600" },
               { href: "/split-bill", icon: ReceiptText, label: "Split Bill", desc: "Bagi tagihan", color: "from-pink-500 to-pink-600" },
             ].map((a) => (
               <a key={a.label} href={a.href} className="group flex flex-col items-center p-4 bg-white/70 backdrop-blur-md rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border border-white/20">
