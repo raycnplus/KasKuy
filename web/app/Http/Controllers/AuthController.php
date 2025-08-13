@@ -26,6 +26,7 @@ class AuthController extends Controller
                 'username' => 'required|string|max:255|unique:users,username',
                 'phone'    => 'required|string|unique:users',
                 'password' => 'required|string|min:6',
+                'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             ],
             [
                 'phone.unique'      => 'Nomor telepon sudah terdaftar',
@@ -98,9 +99,8 @@ class AuthController extends Controller
             'password' => bcrypt($data['password']),
         ]);
 
-        Cache::forget('register_' . $request->phone); // bersihkan cache
+        Cache::forget('register_' . $request->phone);
 
-        // Login user (pakai Sanctum token misalnya)
         $token = $user->createToken('auth_token')->plainTextToken;
 
         $user->tokens()->latest()->first()->update([

@@ -29,31 +29,65 @@ class ReceiptController extends Controller
 
         $result = $response->json();
 
-        $receipt = Receipt::create([
-            'created_by'    => Auth::id(),
-            'store_name'    => $result['store_name'] ?? 'Tanpa Nama Toko',
-            'store_address' => $result['store_address'] ?? null,
-            'date'          => $result['date'] ?? now(),
-            'subtotal'      => $result['subtotal'] ?? null,
-            'tax'           => $result['tax'] ?? null,
-            'total'         => $result['total'] ?? 0,
-            'cash'          => $result['cash'] ?? null,
-            'change'        => $result['change'] ?? null,
+        return response()->json([
+            'message' => 'Hasil OCR berhasil diproses',
+            'data' => [
+                'store_name'    => $result['store_name'] ?? 'Tanpa Nama Toko',
+                'store_address' => $result['store_address'] ?? null,
+                'date'          => $result['date'] ?? now()->toDateString(),
+                'subtotal'      => $result['subtotal'] ?? null,
+                'tax'           => $result['tax'] ?? null,
+                'total'         => $result['total'] ?? 0,
+                'cash'          => $result['cash'] ?? null,
+                'change'        => $result['change'] ?? null,
+                'items'         => $result['items'] ?? [],
+            ]
+        ]);
+    }
+
+    public function saveOcr(Request $request)
+    {
+        $data = $request->validate([
+            'store_name'    => 'required|string|max:255',
+            'store_address' => 'nullable|string',
+            'date'          => 'required|date',
+            'subtotal'      => 'nullable|numeric',
+            'tax'           => 'nullable|numeric',
+            'total'         => 'required|numeric',
+            'cash'          => 'nullable|numeric',
+            'change'        => 'nullable|numeric',
+            'items'         => 'required|array|min:1',
+            'items.*.product' => 'required|string',
+            'items.*.quantity' => 'required|numeric|min:1',
+            'items.*.price' => 'required|numeric|min:0',
+            'items.*.total' => 'required|numeric|min:0',
         ]);
 
-        foreach ($result['items'] ?? [] as $item) {
+        $receipt = Receipt::create([
+            'created_by'    => Auth::id(),
+            'store_name'    => $data['store_name'],
+            'store_address' => $data['store_address'] ?? null,
+            'date'          => $data['date'],
+            'subtotal'      => $data['subtotal'] ?? null,
+            'tax'           => $data['tax'] ?? null,
+            'total'         => $data['total'],
+            'cash'          => $data['cash'] ?? null,
+            'change'        => $data['change'] ?? null,
+        ]);
+
+        foreach ($data['items'] as $item) {
             ReceiptItem::create([
                 'receipt_id' => $receipt->id,
-                'product'    => $item['product'] ?? 'Produk Tidak Dikenal',
-                'quantity'   => $item['quantity'] ?? 1,
-                'price'      => $item['price'] ?? 0,
-                'total'      => $item['total'] ?? 0,
+                'product'    => $item['product'],
+                'quantity'   => $item['quantity'],
+                'price'      => $item['price'],
+                'total'      => $item['total'],
             ]);
         }
 
         return response()->json([
-            'message' => 'Hasil OCR berhasil disimpan',
-            'data' => $receipt->load('items')
+            'message' => 'Data berhasil disimpan',
+            'data'    => $receipt->load('items')
         ], 201);
     }
 
