@@ -65,7 +65,7 @@ root.render(
             <Route path="/split-bill" element={<Splitbill />} />
             <Route path="/settingsa/friends" element={<Friends />} />
             <Route path="/settings" element={<Settings />} />
-          <Route path="/settingsa/category" element={<RCategory />} />
+          <Route path="/settings/category" element={<RCategory />} />
         </Route>
 
         {/* 404 */}

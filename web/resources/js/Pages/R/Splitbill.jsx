@@ -383,7 +383,7 @@ const RSplitBill = () => {
                       <div key={p.id} className="rounded-2xl border border-slate-200 bg-white p-4 flex items-center justify-between">
                         <div className="min-w-0">
                           <div className="font-semibold text-slate-800 truncate">{p.user?.name || p.user?.username || "Teman"}</div>
-                          <div className="text-xs text-slate-500">ID: {p.user?.id}</div>
+                          <div className="text-xs text-slate-500">@{p.user?.username}</div>
                         </div>
                         <button onClick={() => removeParticipant(p)} className="p-2 rounded-lg hover:bg-rose-50 text-rose-600">
                           <Trash2 className="w-4 h-4" />
