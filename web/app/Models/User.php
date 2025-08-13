@@ -23,7 +23,7 @@ class User extends Authenticatable
         'username',
         'phone',
         'password',
-        'role'
+        'profile_picture',
     ];
 
     /**
@@ -77,11 +77,6 @@ class User extends Authenticatable
     public function friendRequests()
     {
         return $this->hasMany(Friendship::class, 'friend_id')->where('status', 'pending');
-    }
-
-    public function splitBillsCreated()
-    {
-        return $this->hasMany(SplitBill::class, 'created_by');
     }
 
     public function splitBillParticipations()

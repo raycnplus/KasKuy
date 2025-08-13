@@ -12,6 +12,7 @@ use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\ParticipantController;
 use App\Http\Controllers\AssignItemController;
 use App\Http\Controllers\ReceiptItemController;
+use App\Http\Controllers\ProfileController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -63,10 +64,13 @@ Route::get('/reports/monthly-compare', [ReportController::class, 'monthlyCompare
     Route::get('/friends', [FriendshipController::class, 'friends']);
     Route::delete('/friends/{username}', [FriendshipController::class, 'removeFriend']);
 
+    Route::post('/user/profile-picture', [ProfileController::class, 'updateProfilePicture']);
+
     Route::get('/friends/search', [SearchController::class, 'searchFriends']);
     Route::get('/search', [SearchController::class, 'searchUser']);
 
     Route::post('/ocr', [ReceiptController::class, 'ocr']);
+    Route::post('/saveOcr', [ReceiptController::class, 'saveOcr']);
     Route::put('/receipts/{id}', [ReceiptController::class, 'updateOcr']);
     Route::patch('/receipt-items/{id}', [ReceiptController::class, 'update']);
 
