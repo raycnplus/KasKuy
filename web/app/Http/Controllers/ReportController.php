@@ -153,34 +153,35 @@ class ReportController extends Controller
     }
 
     public function latestTransactions(Request $request)
-    {
-        try {
-            $user = $request->user();
+{
+    try {
+        $user = $request->user();
+        $month = $request->integer('month');
+        $year  = $request->integer('year');
 
-            $transactions = Transaction::where('user_id', $user->id)
-                ->orderBy('date', 'desc')
-                ->orderBy('created_at', 'desc')
-                ->get(['id', 'title', 'type', 'amount', 'date', 'description', 'created_at']);
+        $query = Transaction::where('user_id', $user->id);
+        if ($month) $query->whereMonth('date', (int)$month);
+        if ($year)  $query->whereYear('date', (int)$year);
 
-            if ($transactions->isEmpty()) {
-                return response()->json([
-                    'message' => 'Belum ada transaksi.'
-                ], 404);
-            }
+        $transactions = $query
+            ->with(['category:id,name,icon'])
+            ->orderBy('date', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-            return response()->json([
-                'total'        => $transactions->count(),
-                'transactions' => $transactions
-            ]);
-        } catch (\Throwable $e) {
-            return response()->json([
-                'message'   => $e->getMessage(),
-                'exception' => class_basename($e),
-                'line'      => $e->getLine(),
-                'file'      => $e->getFile(),
-            ], 500);
-        }
+        return response()->json([
+            'total' => $transactions->count(),
+            'transactions' => $transactions,
+        ]);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'message' => $e->getMessage(),
+            'exception' => class_basename($e),
+            'line' => $e->getLine(),
+            'file' => $e->getFile(),
+        ], 500);
     }
+}
 
     public function incomeHistory(Request $request)
     {
@@ -232,5 +233,56 @@ class ReportController extends Controller
                 'file'      => $e->getFile(),
             ], 500);
         }
+    }
+
+    public function monthlyCompare(Request $request)
+    {
+        $user = $request->user();
+        $month = (int) $request->query('month', now()->month);
+        $year  = (int) $request->query('year', now()->year);
+
+        $cur = Transaction::where('user_id', $user->id)
+            ->whereMonth('date', $month)
+            ->whereYear('date', $year)
+            ->get();
+
+        $prevDate = Carbon::create($year, $month, 1)->subMonth();
+        $pm = $prevDate->month; $py = $prevDate->year;
+
+        $prev = Transaction::where('user_id', $user->id)
+            ->whereMonth('date', $pm)
+            ->whereYear('date', $py)
+            ->get();
+
+        $curIncome = (float) $cur->where('type', 'Pemasukan')->sum('amount');
+        $curExpense = (float) $cur->where('type', 'Pengeluaran')->sum('amount');
+        $curBalance = $curIncome - $curExpense;
+
+        $prevIncome = (float) $prev->where('type', 'Pemasukan')->sum('amount');
+        $prevExpense = (float) $prev->where('type', 'Pengeluaran')->sum('amount');
+        $prevBalance = $prevIncome - $prevExpense;
+
+        $pct = fn($now, $old) => $old == 0 ? null : round((($now - $old) / $old) * 100, 1);
+
+        return response()->json([
+            'month' => $month,
+            'year' => $year,
+            'label' => Carbon::create($year, $month, 1)->format('F Y'),
+            'current' => [
+                'income' => $curIncome,
+                'expense' => $curExpense,
+                'balance' => $curBalance,
+            ],
+            'previous' => [
+                'income' => $prevIncome,
+                'expense' => $prevExpense,
+                'balance' => $prevBalance,
+            ],
+            'change_pct' => [
+                'income' => $pct($curIncome, $prevIncome),
+                'expense' => $pct($curExpense, $prevExpense),
+                'balance' => $pct($curBalance, $prevBalance),
+            ],
+        ]);
     }
 }

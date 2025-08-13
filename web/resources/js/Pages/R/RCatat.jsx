@@ -391,7 +391,7 @@ const RCatat = () => {
                       <span>{cat.name}</span>
                     </button>
                   ))}
-                  <a href="/slp" className="px-3 py-2 rounded-xl border-2 border-emerald-300 text-emerald-600 hover:bg-emerald-100 flex items-center">
+                  <a href="/settings/category" className="px-3 py-2 rounded-xl border-2 border-emerald-300 text-emerald-600 hover:bg-emerald-100 flex items-center">
                     <Plus className="w-4 h-4" />
                   </a>
                 </div>
