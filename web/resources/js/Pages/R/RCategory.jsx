@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import { ChevronLeft, Plus, Edit3, Trash2, X, CheckCircle2, Smile } from "lucide-react";
 import Emoji from "../../components/Emoji";
 import api from "../../api";
+import BackButton from "../../components/lainnya/BackButton";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const typeActiveClasses = {
   Pengeluaran: {
@@ -139,6 +141,18 @@ const RCategory = () => {
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState(null);
 
+  const RCategory = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from;
+  }
+
+  const goBack = () => {
+    if (from) navigate(from, { replace: true });
+    else if (window.history.length > 1) navigate(-1);
+    else navigate("/dashboard");
+  };
+
   const filtered = useMemo(() => categories.filter((c) => c.type === filterType), [categories, filterType]);
 
   const resetForm = () => {
@@ -231,9 +245,7 @@ const RCategory = () => {
       <div className="p-4 sm:p-6 lg:p-8 relative z-10 max-w-5xl mx-auto pb-28">
         <div className="flex items-center justify-between mb-6 sm:mb-8">
           <div className="flex items-center gap-x-2">
-            <a href="/dashboard">
-              <ChevronLeft className="w-7 h-7 sm:w-8 sm:h-8 text-emerald-500 hover:text-emerald-600 cursor-pointer" />
-            </a>
+            <BackButton />
             <h1 className="text-xl sm:text-2xl font-semibold text-slate-800">Kelola Kategori</h1>
           </div>
 

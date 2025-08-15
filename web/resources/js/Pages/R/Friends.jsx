@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "../../api";
+import BackButton from "../../components/lainnya/BackButton";
 
 const Chip = ({ active, onClick, children }) => (
   <button
@@ -192,9 +193,7 @@ const RFriends = () => {
       <div className="p-4 sm:p-6 lg:p-8 relative z-10 max-w-7xl mx-auto pb-28">
         <div className="flex items-center justify-between mb-6 sm:mb-8">
           <div className="flex items-center gap-2">
-            <a href="/dashboard" className="inline-flex">
-              <ChevronLeft className="w-7 h-7 sm:w-8 sm:h-8 text-emerald-500 hover:text-emerald-600" />
-            </a>
+            <BackButton />
             <h1 className="text-xl sm:text-2xl font-semibold">Teman</h1>
           </div>
         </div>
