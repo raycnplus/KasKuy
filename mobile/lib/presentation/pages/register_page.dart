@@ -23,7 +23,7 @@ class _RegisterPageState extends State<RegisterPage> {
       final msg = await AuthService.sendOtp(
         name: nameCtrl.text,
         username: usernameCtrl.text,
-        phone: phoneCtrl.text, // sudah format internasional
+        phone: phoneCtrl.text,
         password: passCtrl.text,
       );
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
@@ -60,9 +60,9 @@ class _RegisterPageState extends State<RegisterPage> {
                   labelText: 'Nomor Telepon',
                   border: OutlineInputBorder(),
                 ),
-                initialCountryCode: 'ID', 
+                initialCountryCode: 'ID',
                 onChanged: (phone) {
-                  phoneCtrl.text = phone.completeNumber; 
+                  phoneCtrl.text = phone.completeNumber.replaceAll('+', '');
                 },
               ),
               SizedBox(height: 10),

@@ -12,15 +12,11 @@ class _LoginPageState extends State<LoginPage> {
   final passwordCtrl = TextEditingController();
   bool loading = false;
 
-  String countryCode = "+62";
-
   Future<void> handleLogin() async {
     setState(() => loading = true);
     try {
-      final fullPhone = "$countryCode${phoneCtrl.text.trim()}";
-
       final result = await AuthService.login(
-        phone: fullPhone,
+        phone: phoneCtrl.text.trim(),
         password: passwordCtrl.text,
       );
 
@@ -49,42 +45,9 @@ class _LoginPageState extends State<LoginPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Row(
-              children: [
-                // Dropdown kode negara
-                DropdownButton<String>(
-                  value: countryCode,
-                  items: [
-                    DropdownMenuItem(
-                      value: "+62",
-                      child: Text("+62 🇮🇩"),
-                    ),
-                    DropdownMenuItem(
-                      value: "+60",
-                      child: Text("+60 🇲🇾"),
-                    ),
-                    DropdownMenuItem(
-                      value: "+65",
-                      child: Text("+65 🇸🇬"),
-                    ),
-                  ],
-                  onChanged: (value) {
-                    setState(() {
-                      countryCode = value!;
-                    });
-                  },
-                ),
-                SizedBox(width: 10),
-                Expanded(
-                  child: TextField(
-                    controller: phoneCtrl,
-                    keyboardType: TextInputType.phone,
-                    decoration: InputDecoration(
-                      labelText: "Nomor Telepon",
-                    ),
-                  ),
-                ),
-              ],
+            TextField(
+              controller: phoneCtrl,
+              decoration: InputDecoration(labelText: "Nomor Telepon"),
             ),
             TextField(
               controller: passwordCtrl,

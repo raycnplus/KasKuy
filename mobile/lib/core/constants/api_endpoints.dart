@@ -5,4 +5,5 @@ class ApiEndpoints {
   static const String resendOtp = "$baseUrl/resend-otp";
   static const String login = "$baseUrl/login";
   static const String logout = "$baseUrl/logout";
+  static const String categories = "$baseUrl/category";
 }
