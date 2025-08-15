@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
     Activity,
@@ -68,6 +69,29 @@ const RDashboard = () => {
     const monthlyLockRef = useRef(false);
     const txLockRef = useRef(false);
     const pickerRef = useRef(null);
+    const [avatarUrl, setAvatarUrl] = useState(null);
+    const fileRef = useRef(null);
+
+    const [profile, setProfile] = useState(null);
+    const initials = (s) => {
+  const t = String(s || "").trim();
+  if (!t) return "?";
+  const p = t.split(" ").filter(Boolean).slice(0, 2);
+  return p.map((w) => w[0]).join("").toUpperCase();
+};
+    useEffect(() => {
+        (async () => {
+            try {
+                const { data } = await api.get("/profile");
+                const p = data?.data || null;
+                setProfile(p);
+                const url = p?.profile_picture_url || null;
+                if (url) setAvatarUrl(url);
+            } catch {
+                setProfile(null);
+            }
+        })();
+    }, []);
 
     const monthNum = selectedDate.getMonth() + 1;
     const yearNum = selectedDate.getFullYear();
@@ -439,7 +463,19 @@ const RDashboard = () => {
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
                     <div className="flex items-center gap-4">
                         <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white text-2xl shadow-lg ring-4 ring-white/20">
-                            👤
+                            {avatarUrl ? (
+                                <img
+                                    src={avatarUrl}
+                                    alt="avatar"
+                                    className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white text-2xl shadow-lg ring-4 ring-white/20"
+                                />
+                            ) : (
+                                <span className="text-xl sm:text-2xl font-bold">
+                                    {initials(
+                                        profile?.name || profile?.username
+                                    )}
+                                </span>
+                            )}
                         </div>
                         <div>
                             <h1 className="font-bold text-2xl sm:text-3xl text-slate-800">

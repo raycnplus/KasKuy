@@ -39,7 +39,7 @@ class AuthController extends Controller
                 'name.max'          => 'Nama maksimal 255 karakter',
             ]
         );
-        
+
         // Cache data untuk verifikasi selanjutnya
         Cache::put('register_' . $data['phone'], $data, now()->addMinutes(10));
 
@@ -316,6 +316,10 @@ class AuthController extends Controller
             ], 401);
         }
 
+        $url = $user->profile_picture
+            ? url('uploads/profile_pictures/' . $user->profile_picture)
+            : null;
+
         return response()->json([
             'message' => 'Profil pengguna',
             'data' => [
@@ -323,6 +327,8 @@ class AuthController extends Controller
                 'name' => $user->name,
                 'username' => $user->username,
                 'phone' => $user->phone,
+                'profile_picture' => $user->profile_picture,
+                'profile_picture_url' => $url,
                 'created_at' => $user->created_at,
                 'updated_at' => $user->updated_at,
             ]
