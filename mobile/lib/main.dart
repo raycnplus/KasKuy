@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
           }
 
           if (snapshot.data == true) {
-            return HomePage(); 
+            return LandingPage(); 
           } else {
             return LandingPage();
           }
