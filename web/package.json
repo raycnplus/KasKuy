@@ -21,6 +21,7 @@
     },
     "dependencies": {
         "@mui/x-date-pickers": "^8.9.2",
+        "@studio-freight/lenis": "^1.0.42",
         "dayjs": "^1.11.13",
         "emoji-picker-element": "^1.26.3",
         "framer-motion": "^12.23.6",

@@ -5,7 +5,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster, toast } from "react-hot-toast";
 
 // Pages
-import LandingPage from "./Pages/LandingPage";
+import LandingPage from "./Pages/R/RLandingPage";
 import Login from "./Pages/Auth";
 import Signup from "./Pages/Auth";
 import OTP from "./Pages/OTP";

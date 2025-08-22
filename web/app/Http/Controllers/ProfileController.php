@@ -15,20 +15,28 @@ class ProfileController extends Controller
 
         $user = Auth::user();
 
-        if ($user->profile_picture && file_exists(public_path('uploads/profile_pictures/' . $user->profile_picture))) {
-            unlink(public_path('uploads/profile_pictures/' . $user->profile_picture));
+        $dir = public_path('uploads/profile_pictures');
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
+
+        if ($user->profile_picture) {
+            $old = $dir . DIRECTORY_SEPARATOR . $user->profile_picture;
+            if (file_exists($old)) {
+                @unlink($old);
+            }
         }
 
         $file = $request->file('profile_picture');
         $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-        $file->move(public_path('uploads/profile_pictures'), $fileName);
+        $file->move($dir, $fileName);
 
         $user->profile_picture = $fileName;
         $user->save();
 
         return response()->json([
             'message' => 'Foto profil berhasil diperbarui',
-            'profile_picture_url' => url('uploads/profile_pictures/' . $fileName)
+            'profile_picture_url' => url('uploads/profile_pictures/' . $fileName),
         ]);
     }
 }
