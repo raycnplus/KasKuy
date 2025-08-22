@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '/core/constants/api_endpoints.dart';
 import '/models/category_model.dart';
 
-
 class CategoryService {
   static Future<bool> createCategory({
     required String name,
@@ -20,9 +19,7 @@ class CategoryService {
 
       final response = await http.post(
         Uri.parse(ApiEndpoints.categories),
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
+        headers: {'Authorization': 'Bearer $token'},
         body: {
           'name': name,
           'icon': icon,
@@ -47,13 +44,15 @@ class CategoryService {
 
       final response = await http.get(
         Uri.parse(ApiEndpoints.categories),
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
+        headers: {'Authorization': 'Bearer $token'},
       );
 
       if (response.statusCode == 200) {
-        final List data = json.decode(response.body);
+        final body = json.decode(response.body);
+
+        // Ambil isi "data" -> List
+        final List data = body['data'];
+
         return data.map((e) => Category.fromJson(e)).toList();
       }
       return [];
@@ -78,9 +77,7 @@ class CategoryService {
 
       final response = await http.put(
         Uri.parse("${ApiEndpoints.categories}/$id"),
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
+        headers: {'Authorization': 'Bearer $token'},
         body: {
           'name': name,
           'icon': icon,
@@ -105,15 +102,53 @@ class CategoryService {
 
       final response = await http.delete(
         Uri.parse("${ApiEndpoints.categories}/$id"),
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
+        headers: {'Authorization': 'Bearer $token'},
       );
 
       return response.statusCode == 200;
     } catch (e) {
       print("Error deleteCategory: $e");
       return false;
+    }
+  }
+
+  static Future<List<Category>> getIncomeCategories(String token) async {
+    final res = await http.get(
+      Uri.parse(ApiEndpoints.incomeCategories),
+      headers: {"Authorization": "Bearer $token", "Accept": "application/json"},
+    );
+
+    if (res.statusCode == 200) {
+      final body = jsonDecode(res.body);
+
+      if (body is Map && body.containsKey("Pemasukan")) {
+        final List data = body["Pemasukan"];
+        return data.map((json) => Category.fromJson(json)).toList();
+      } else {
+        return [];
+      }
+    } else {
+      throw Exception("Gagal load income categories: ${res.body}");
+    }
+  }
+
+  static Future<List<Category>> getExpenseCategories(String token) async {
+    final res = await http.get(
+      Uri.parse(ApiEndpoints.expenseCategories),
+      headers: {"Authorization": "Bearer $token", "Accept": "application/json"},
+    );
+
+    if (res.statusCode == 200) {
+      final body = jsonDecode(res.body);
+
+      if (body is Map && body.containsKey("Pengeluaran")) {
+        final List data = body["Pengeluaran"];
+        return data.map((json) => Category.fromJson(json)).toList();
+      } else {
+        return [];
+      }
+    } else {
+      throw Exception("Gagal load expense categories: ${res.body}");
     }
   }
 }

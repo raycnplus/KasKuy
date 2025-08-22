@@ -6,7 +6,7 @@ class HttpClientHelper {
     String url, {
     Map<String, dynamic>? body,
     Map<String, String>? headers,
-    bool sendJson = true, // default kirim JSON
+    bool sendJson = true, 
   }) async {
     final mergedHeaders = {
       'Accept': 'application/json',

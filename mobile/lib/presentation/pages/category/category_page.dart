@@ -87,7 +87,7 @@ class _CategoryPageState extends State<CategoryPage> {
   }
 
   void goToForm({Category? category}) async {
-    final result = await Navigator.push(
+    final result = await Navigator.push( 
       context,
       MaterialPageRoute(
         builder: (context) => CategoryFormPage(category: category),

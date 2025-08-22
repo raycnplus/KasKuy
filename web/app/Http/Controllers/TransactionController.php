@@ -9,10 +9,10 @@ use Illuminate\Support\Facades\Auth;
 
 class TransactionController extends Controller
 {
-
     public function index()
     {
-        $transactions = Transaction::where('user_id', Auth::id())
+        $transactions = Transaction::with('category') // biar langsung ambil kategori
+            ->where('user_id', Auth::id())
             ->latest()
             ->get();
 
@@ -21,42 +21,33 @@ class TransactionController extends Controller
 
     public function store(Request $request)
     {
-        try {
-            $data = $request->validate([
-                'type'        => 'required|in:Pemasukan,Pengeluaran',
-                'amount'      => 'required|numeric',
-                'category_id' => 'required|exists:categories,id',
-                'description' => 'nullable|string',
-                'date'        => 'required|date',
-            ]);
+        $data = $request->validate([
+            'type'        => 'required|in:Pemasukan,Pengeluaran',
+            'amount'      => 'required|numeric',
+            'category_id' => 'required|exists:categories,id',
+            'description' => 'nullable|string',
+            'date'        => 'required|date',
+        ]);
 
-            $transaction = Transaction::create([
-                'user_id'     => Auth::id(),
-                'type'        => $data['type'],
-                'amount'      => $data['amount'],
-                'category_id' => $data['category_id'],
-                'description' => $data['description'] ?? null,
-                'date'        => $data['date'],
-            ]);
+        $transaction = Transaction::create([
+            'user_id'     => Auth::id(),
+            'type'        => $data['type'],
+            'amount'      => $data['amount'],
+            'category_id' => $data['category_id'],
+            'description' => $data['description'] ?? null,
+            'date'        => $data['date'],
+        ]);
 
-            return new TransactionResource($transaction);
-        } catch (\Throwable $e) {
-            return response()->json([
-                'message'   => $e->getMessage(),
-                'exception' => class_basename($e),
-                'line'      => $e->getLine(),
-                'file'      => $e->getFile(),
-            ], 500);
-        }
+        return new TransactionResource($transaction);
     }
 
     public function show(Transaction $transaction)
     {
-        if (Auth::id() !== $transaction->user_id) {
+        if ($transaction->user_id !== Auth::id()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        return new TransactionResource($transaction);
+        return new TransactionResource($transaction->load('category'));
     }
 
     public function update(Request $request, Transaction $transaction)
@@ -75,12 +66,12 @@ class TransactionController extends Controller
 
         $transaction->update($data);
 
-        return new TransactionResource($transaction);
+        return new TransactionResource($transaction->load('category'));
     }
 
     public function destroy(Transaction $transaction)
     {
-        if (Auth::id() !== $transaction->user_id) {
+        if ($transaction->user_id !== Auth::id()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
