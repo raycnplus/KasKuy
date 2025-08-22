@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/presentation/pages/category/category_page.dart';
 import 'package:mobile/presentation/pages/landing_page.dart';
 import 'package:mobile/presentation/pages/transaction/transaction_page.dart';
+import 'package:mobile/presentation/pages/profile/profile_page.dart'; // <-- Tambahkan ini
 import 'package:shared_preferences/shared_preferences.dart';
 import '/data/services/auth_service.dart';
 import 'login_page.dart';
@@ -10,6 +11,7 @@ import 'package:http/http.dart' as http;
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
+
   Future<void> _handleLogout(BuildContext context) async {
     try {
       await AuthService.logout();
@@ -30,7 +32,20 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Kaskuy")),
+      appBar: AppBar(
+        title: const Text("Kaskuy"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person), // <-- Icon Profile
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ProfilePage()), // <-- Halaman Profile
+              );
+            },
+          ),
+        ],
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
