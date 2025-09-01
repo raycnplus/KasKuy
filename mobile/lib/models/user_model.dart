@@ -44,4 +44,27 @@ class User {
       "updated_at": updatedAt.toIso8601String(),
     };
   }
+
+  /// copyWith untuk update sebagian field
+  User copyWith({
+    int? id,
+    String? name,
+    String? username,
+    String? phone,
+    String? profilePicture,
+    String? profilePictureUrl,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return User(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      username: username ?? this.username,
+      phone: phone ?? this.phone,
+      profilePicture: profilePicture ?? this.profilePicture,
+      profilePictureUrl: profilePictureUrl ?? this.profilePictureUrl,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
 }

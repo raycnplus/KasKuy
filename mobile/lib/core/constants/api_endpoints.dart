@@ -1,5 +1,5 @@
 class ApiEndpoints {
-  static const String baseUrl = 'http://10.137.90.174:8000/api'; 
+  static const String baseUrl = 'http://192.168.1.64:8000/api'; 
   static const String sendOtpForRegister = '$baseUrl/register';
   static const String verifyOtpAndRegister = '$baseUrl/register/verify';
   static const String resendOtp = "$baseUrl/resend-otp";
@@ -12,4 +12,5 @@ class ApiEndpoints {
   static const String incomeCategories = "$baseUrl/category/IncomeCategory";
   static const String expenseCategories = "$baseUrl/category/ExpenseCategory";
   static const String userProfile = "$baseUrl/profile";
+  static const String updateProfilePicture = "$baseUrl/user/profile-picture";
 }

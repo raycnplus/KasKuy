@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; 
+import 'package:intl/intl.dart';
 import '/models/transaction_model.dart';
 import '/data/services/transaction_service.dart';
 import '/models/category_model.dart';
@@ -26,8 +26,11 @@ class _TransactionFormState extends State<TransactionForm> {
 
   List<Category> _categories = [];
 
-  final NumberFormat _formatter =
-      NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
+  final NumberFormat _formatter = NumberFormat.currency(
+    locale: 'id_ID',
+    symbol: 'Rp ',
+    decimalDigits: 0,
+  );
 
   int _rawAmount = 0;
 
@@ -41,13 +44,17 @@ class _TransactionFormState extends State<TransactionForm> {
     _amountController = TextEditingController(
       text: _rawAmount > 0 ? _formatter.format(_rawAmount) : '',
     );
-    _descriptionController =
-        TextEditingController(text: widget.transaction?.description ?? '');
-    _dateController = TextEditingController(
-      text: widget.transaction?.date ?? DateTime.now().toString().split(" ")[0],
+    _descriptionController = TextEditingController(
+      text: widget.transaction?.description ?? '',
     );
 
-    _loadCategories(); // pertama kali load sesuai type default
+    // kalau ada transaksi lama, parse tanggalnya
+    String dateText = widget.transaction?.date ?? DateTime.now().toString().split(" ")[0];
+    _dateController = TextEditingController(
+      text: DateFormat("dd MMM yyyy", "id_ID").format(DateTime.parse(dateText)),
+    );
+
+    _loadCategories();
   }
 
   Future<void> _loadCategories() async {
@@ -64,7 +71,6 @@ class _TransactionFormState extends State<TransactionForm> {
 
       setState(() {
         _categories = cats;
-        // reset kategori kalau gak ada yg cocok
         if (!_categories.any((c) => c.id == _categoryId)) {
           _categoryId = null;
         }
@@ -76,12 +82,16 @@ class _TransactionFormState extends State<TransactionForm> {
 
   void _save() async {
     if (_formKey.currentState!.validate()) {
+      // parsing kembali ke format backend (yyyy-MM-dd)
+      DateTime parsed = DateFormat("dd MMM yyyy", "id_ID").parse(_dateController.text);
+      String backendDate = DateFormat("yyyy-MM-dd").format(parsed);
+
       final trx = Transaction(
         id: widget.transaction?.id ?? 0,
         type: _type,
         amount: _rawAmount,
         description: _descriptionController.text,
-        date: _dateController.text,
+        date: backendDate,
         categoryId: _categoryId!,
         categoryName: '',
         categoryIcon: '',
@@ -156,7 +166,7 @@ class _TransactionFormState extends State<TransactionForm> {
 
             const SizedBox(height: 16),
 
-            // Tanggal
+            // Tanggal dengan DatePicker
             Row(
               children: [
                 const Icon(Icons.calendar_today, size: 18),
@@ -164,10 +174,30 @@ class _TransactionFormState extends State<TransactionForm> {
                 Expanded(
                   child: TextFormField(
                     controller: _dateController,
+                    readOnly: true,
                     decoration: const InputDecoration(
                       border: InputBorder.none,
                       hintText: "Tanggal",
                     ),
+                    onTap: () async {
+                      DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.tryParse(
+                              DateFormat("yyyy-MM-dd").format(DateTime.now()),
+                            ) ??
+                            DateTime.now(),
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime(2100),
+                        locale: const Locale("id", "ID"),
+                      );
+
+                      if (pickedDate != null) {
+                        setState(() {
+                          _dateController.text =
+                              DateFormat("dd MMM yyyy", "id_ID").format(pickedDate);
+                        });
+                      }
+                    },
                   ),
                 ),
               ],
@@ -181,7 +211,9 @@ class _TransactionFormState extends State<TransactionForm> {
                 controller: _amountController,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                    fontSize: 28, fontWeight: FontWeight.bold),
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                ),
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(
                   hintText: "Rp 0",
@@ -237,8 +269,9 @@ class _TransactionFormState extends State<TransactionForm> {
               onPressed: _save,
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                backgroundColor:
-                    _type == "Pengeluaran" ? Colors.red : Colors.green,
+                backgroundColor: _type == "Pengeluaran"
+                    ? Colors.red
+                    : Colors.green,
               ),
               child: Text(
                 _type == "Pengeluaran"
